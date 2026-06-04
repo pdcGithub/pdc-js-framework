@@ -17,7 +17,7 @@ import { report, Assert } from "../testTools.js";
 import { ClassCreationError, ParameterError, VerificationError } from "../../models/errors.js";
 
 /**
- * 关于 ClassCreationError 类的测试，通过的话会返回 true，否则返回 false
+ * 关于 ClassCreationError 类的测试
  */
 function testClassCreationError() {
     // 构造函数测试，这里不应该抛异常，而且创建的是 异常类对象
@@ -40,7 +40,7 @@ function testClassCreationError() {
 }
 
 /**
- * 关于 ParameterError 类的测试，通过的话会返回 true，否则返回 false
+ * 关于 ParameterError 类的测试
  */
 function testParameterError(){
     // 构造函数测试，这里不应该抛异常，而且创建的是 异常类对象
@@ -63,7 +63,7 @@ function testParameterError(){
 }
 
 /**
- * 关于 VerificationError 类的测试，通过的话会返回 true，否则返回 false
+ * 关于 VerificationError 类的测试
  */
 function testVerificationError() {
     // 构造函数测试，这里不应该抛异常，而且创建的是 异常类对象
