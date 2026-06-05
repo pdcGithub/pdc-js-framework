@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这里测试的是 utils/datatype/base.js 模块的程序</title>
+</head>
+<body>
+    <!-- 
+    说明：这里是 utils 中的 html.js 模块的测试程序。
+        为了方便测试，我这里一般都是直接运行 js 代码，然后把结果写入 页面的结果区。即 id 是 result 的 div 区域
+    -->
+    <div id="result">
+    </div>
+
+    <!-- 这里是运行测试过程的代码 -->
+    <script type="module">
+    // 导入测试函数
+    import { 
+        testIsNullValue, testNotNullValue,
+        testIsStringValue, testIsStringObject, testIsString, testIsEmptyString, testValueOfString,
+        testIsBooleanValue, testIsBooleanObject, testIsBoolean, testValueOfBoolean,
+        testIsNumberValue, testIsNumberObject, testIsNumber, testValueOfNumber,
+        testIsSymbol, testIsRegexp, testIsRegexpOk 
+    } from "./testBase.js";
+    // 导入 report 函数
+    import { report } from "../../testTools.js";
+    // 执行测试
+    report('utils/datatype/base.js', testIsNullValue, testNotNullValue,
+                                    testIsStringValue, testIsStringObject, testIsString, testIsEmptyString, testValueOfString,
+                                    testIsBooleanValue, testIsBooleanObject, testIsBoolean, testValueOfBoolean,
+                                    testIsNumberValue, testIsNumberObject, testIsNumber, testValueOfNumber,
+                                    testIsSymbol, testIsRegexp, testIsRegexpOk);
+    </script>
+</body>
+</html>
