@@ -124,6 +124,14 @@ class AssertError extends Error {
 class Assert {
 
     /**
+     * 这个构造函数，用于避免类被 new 初始化
+     * @throws 这是一个不能初始化的类，如果 new 创建实例，则抛异常 AssertError 。
+     */
+    constructor(){
+        if(new.target === Assert) throw new AssertError(`Assert 工具类不能通过 new 初始化，它是静态的`);
+    }
+
+    /**
      * 判断两个值，是否相等
      * @param {*} expectedValue 期望值
      * @param {*} actualValue 实际值
