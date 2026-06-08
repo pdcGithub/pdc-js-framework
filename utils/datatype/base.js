@@ -6,10 +6,9 @@
  * 
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
- * @file This file "base.js" is part of project "js-learning" , which is belong to Michael Pang (It's Me).
+ * @file This file "base.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
  * @author  Micheal Pang (Dongcan Pang)
- * @createDate  2025-08-11
- * @version 1.0.0 
+ * @since  2025-08-11
  * @description  这是作为数据类型处理的一个基础函数集合
  * 
  * 整个文件是基础的数据类型判断 和 获取。所以不能使用 valid.js 来简化异常抛出。因为，抛异常的处理，引用了 这个文件的 API。会造成循环引用，然后报错。
