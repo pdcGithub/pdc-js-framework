@@ -105,6 +105,55 @@ function report(moduleInfo, ...funcs) {
 }
 
 /**
+ * 比较2个 Map 对象的值，是否相等。这个值指的是 key 和 value 2个方面。
+ * 如果 map1 或者 map2 不是 Map 对象，直接返回 false 。如果 map1 和 map2 是空 Map ，直接 true 。
+ * 对于 value 比较，更多是一个 "===" 操作
+ * @param {Map} map1 待匹配的 Map 对象 1
+ * @param {Map} map2 待匹配的 Map 对象 2
+ * @returns {boolean} 如果 2 个待匹配的 Map 对象，key 和 value 均一致，则返回 true ；否则，返回 false
+ */
+function isMapEquals(map1, map2) {
+    
+    // 定义一个返回值
+    let result = true;
+
+    // 首先判断是否为 Map 对象，不是的话 false
+    if(!(map1 instanceof Map && map2 instanceof Map)){
+        result = false;
+        return result;
+    }
+
+    // 判断 map1 和 map2 的 键值对数量是否匹配。不匹配的话，false
+    if(map1.size !== map2.size) {
+        result = false;
+        return result;
+    }
+
+    // 获取 map 的 keys，并转为数组
+    let myKeys = Array.from(map1.keys());
+    // 开始匹配 value 内容
+    for(let i=0;i<myKeys.length;i++){
+        // 获取 map1 的 临时 key  和 value
+        let tmpK1 = myKeys[i];
+        let tmpV1 = map1.get(tmpK1);
+        // 先看看 map2 有没有这个key。没有这个 key 就 false
+        if(!map2.has(tmpK1)){
+            result = false;
+            break;
+        }
+        // 有的话，再比对 value 是否相等。不等 就 false
+        let tmpV2 = map2.get(tmpK1);
+        if(tmpV2!==tmpV1){
+            result = false;
+            break;
+        }
+    }
+
+    // 返回结果 
+    return result;
+}
+
+/**
  * 这里是一个断言异常，一般用于表示断言判断失败。当预测值 和 实际值 不吻合，则抛出 断言异常。
  */
 class AssertError extends Error {
@@ -135,6 +184,7 @@ class Assert {
      * 判断两个值，是否相等
      * @param {*} expectedValue 期望值
      * @param {*} actualValue 实际值
+     * @throws 如果2值不等，抛出 AssertError 异常。
      */
     static equals(expectedValue, actualValue) {
         let errMsg = `函数 ${this.equals.name} 监测出异常 expected=${expectedValue}, 但是 actual=${actualValue}`;
@@ -145,6 +195,7 @@ class Assert {
      * 判断两个值，是否严格相等。这里的判断不是 "==" 是 "==="
      * @param {*} expectedValue 期望值
      * @param {*} actualValue 实际值
+     * @throws 如果2值不等，抛出 AssertError 异常。
      */
     static equalsStrictly(expectedValue, actualValue){
         let errMsg = `函数 ${this.equalsStrictly.name} 监测出异常 expected=${expectedValue}, 但是 actual=${actualValue}`;
@@ -152,9 +203,24 @@ class Assert {
     }
 
     /**
+     * 判断2个Map的内部值，是否相等。这里对比的核心是 Map 对象的内部 key 和 value 是否相等。不等的话，抛 AssertError 异常。
+     * 如果 Map 对象内部没有元素，那就直接 相等。
+     * 如果 Map 对象内部有任何一个 key 和 value 不相等，则不相等。抛 AssertError 异常。
+     * 如果 2个待处理值，不是 Map 对象，则直接抛 AssertError 异常。
+     * @param {Map} expectedMap 期望值
+     * @param {Map} actualMap 实际值
+     * @throws 如果2值不等、参数类型不对，抛出 AssertError 异常。
+     */
+    static mapEquals(expectedMap, actualMap) {
+        let errMsg = `函数 ${this.mapEquals.name} 监测出异常 expectedMap=${expectedMap}, 但是 actualMap=${actualMap}`;
+        if(!isMapEquals(expectedMap, actualMap)) throw new AssertError(errMsg);
+    }
+
+    /**
      * 判断参数传入的函数，是否有抛出 errorClasses 指定的一些异常类
      * @param {Function} func 这是一个待执行的无参函数
      * @param  {...Error} errorClasses 这是一个不定参数，内容是异常类。即Error类或者它的子类
+     * @throws 如参数类型不对，或者指定的函数没有抛异常、没有抛出指定异常；抛出 AssertError 异常。
      */
     static throwsErrors(func, ...errorClasses) {
         // 首先，判断参数对不对
@@ -186,6 +252,7 @@ class Assert {
     /**
      * 判断传入的函数，执行时会否不抛出异常。
      * @param {Function} func 这是一个待执行的无参函数
+     * @throws 如果参数类型不对，或者指定的函数执行时抛异常；抛出 AssertError 异常。
      */
     static throwsErrorsNone(func) {
         
