@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这里是 utils/datatype.js 的测试页面</title>
+</head>
+<body>
+    <!-- 
+    说明：这里是 utils/datatype.js 模块的测试程序。
+        为了方便测试，我这里一般都是直接运行 js 代码，然后把结果写入 页面的结果区。即 id 是 result 的 div 区域
+    -->
+    <div id="result">
+    </div>
+
+    <!-- 这里是运行测试过程的代码 -->
+    <script type="module">
+    // 导入测试函数
+    import { 
+        // == 
+        testIsNullValue, testNotNullValue,
+        testIsStringValue, testIsStringObject, testIsString, testIsEmptyString, testValueOfString,
+        testIsBooleanValue, testIsBooleanObject, testIsBoolean, testValueOfBoolean,
+        testIsNumberValue, testIsNumberObject, testIsNumber, testValueOfNumber,
+        testIsSymbol, testIsRegexp, testIsRegexpOk,
+        // == 
+        testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
+        testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
+        testIsHtmlElement, testIsHtmlElementList,
+        // == 
+        testToLowerCase, testToUpperCase, 
+        testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase,
+        // == 
+        testDataUtil
+    } from "./testDatatype.js";
+    // 导入 report 函数
+    import { report } from "../testTools.js";
+    // 执行测试
+    report('utils/datatype/base.js 子模块', testIsNullValue, testNotNullValue,
+                                    testIsStringValue, testIsStringObject, testIsString, testIsEmptyString, testValueOfString,
+                                    testIsBooleanValue, testIsBooleanObject, testIsBoolean, testValueOfBoolean,
+                                    testIsNumberValue, testIsNumberObject, testIsNumber, testValueOfNumber,
+                                    testIsSymbol, testIsRegexp, testIsRegexpOk);
+    report('utils/datatype/object.js 子模块', testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
+                                    testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
+                                    testIsHtmlElement, testIsHtmlElementList);
+    report('utils/datatype/transform.js 子模块', 
+                testToLowerCase, testToUpperCase, 
+                testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase);
+    report('utils/datatype.js', testDataUtil);
+    </script>
+</body>
+</html>
