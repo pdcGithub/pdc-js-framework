@@ -9,11 +9,11 @@
  * @file This file "testModels.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2026-06-03
- * @description  这里是关于 models 文件夹下的模块测试的代码
+ * @description  这里是关于 models 文件夹下的 errors.js 模块测试的代码
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
-import { report, Assert } from "../testTools.js";
+import { Assert } from "../testTools.js";
 import { ClassCreationError, ParameterError, VerificationError } from "../../models/errors.js";
 
 /**
@@ -86,6 +86,8 @@ function testVerificationError() {
 }
 
 /**
- * 这里执行测试，并把结果汇总出来
+ * 导出测试函数
  */
-report('models/errors.js', testClassCreationError, testParameterError, testVerificationError);
+export {
+    testClassCreationError, testParameterError, testVerificationError
+}

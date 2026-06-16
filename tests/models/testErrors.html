@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>异常类模块的测试页面</title>
+    <title>异常类模块 models/errors.js 测试页面</title>
 </head>
 <body>
     <!-- 
-    说明：这里是 models 中的 errors 异常类模块的测试程序。
+    说明：这里是 utils 中的 string.js 模块的测试程序。
         为了方便测试，我这里一般都是直接运行 js 代码，然后把结果写入 页面的结果区。即 id 是 result 的 div 区域
     -->
     <div id="result">
     </div>
-
     <!-- 这里是运行测试过程的代码 -->
-    <script type="module" src="testErrors.js"></script>
-
+    <script type="module">
+    // 导入测试函数
+    import { testClassCreationError, testParameterError, testVerificationError } from "./testErrors.js";
+    // 导入 report 函数
+    import { report } from "../testTools.js";
+    // 执行测试
+    report('models/errors.js', testClassCreationError, testParameterError, testVerificationError);
+    </script>
 </body>
 </html>
