@@ -89,7 +89,7 @@ function isObjectLiteral(value){
 /**
  * 判断传来的参数，是否是一个指定类型的对象（JS 中 函数 和 类 都是可以 new 创建对象的）。
  * 使用方式很简单，比如 ： isTargetObject(new String('ss'), String); 或者 多个 isTargetObject(1, String, Number) ;
- * @param {object} value 待处理的参数
+ * @param {*} value 待处理的参数
  * @param {...class} targetClass (这个是不定参数) 指定的对象类型名称，请注意是 类名，不是变量。
  * @returns {boolean} 如果 value 为 targetClass 所对应的类型的一个实例 ，则返回 true；否则，返回 false 。
  * @throws 如果 targetClass 没有传入，或者 它包含了一些不是类型的内容，则抛出 ParameterError 异常。
@@ -132,7 +132,8 @@ function isTargetObject(value, ...targetClass){
             re = isSymbol(value);
             break;
         default:
-            re = value instanceof targetClass[i];
+            // 对于 对象判断，首先要保证 value 是对象。否则的话，像 Error instanceof Object 会判断为成立的
+            re = isObject(value) && value instanceof targetClass[i];
             break;
         }
         // 只要有一个符合，则可以跳出

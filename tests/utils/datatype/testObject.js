@@ -391,6 +391,7 @@ function testIsTargetObject(){
     Assert.equalsStrictly(false, isTargetObject(new RegExp('123'), Error));
     Assert.equalsStrictly(false, isTargetObject(Symbol.for('uid'), Error));
     Assert.equalsStrictly(false, isTargetObject(Error, Error));
+    Assert.equalsStrictly(false, isTargetObject(Error, Object));
     Assert.equalsStrictly(false, isTargetObject(ParameterError, Error));
     Assert.equalsStrictly(false, isTargetObject(()=>{}, Error));
     Assert.equalsStrictly(true, isTargetObject(new ParameterError('测试'), Error));
