@@ -64,7 +64,7 @@ function myToString(param) {
     }
 
     // 类（这里特指用 class 定义的 类，因为 JavaScript 中 函数是一种类，类也是一个函数）
-    if(/^[\s]*class/i.test(param.toString())){
+    if(typeof param === 'function' && /^[\s]*class/i.test(param.toString())){
         // 如果 class 没有 name ，则返回整个代码
         result = `Class ${ param.name?param.name:param.toString() }`;
         return result;

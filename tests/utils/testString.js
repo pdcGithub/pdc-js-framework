@@ -63,6 +63,7 @@ function testMyToString(){
     console.log(new Date(), '普通对象', myToString(new ParameterError('测试111')));
 
     console.log(new Date(), '数组', myToString([1, 2, 3, 4]));
+    console.log(new Date(), '数组', myToString([1, 2, 3, 4, Symbol.for('guid')]));
     console.log(new Date(), '数组', myToString([1, 'a', 3.14, true, false, new Object()]));
 
     console.log(new Date(), 'Set', myToString(new Set()));
