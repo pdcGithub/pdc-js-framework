@@ -13,6 +13,10 @@
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
+// 导入一些工具
+// ==> myToString 函数用于数据转字符串处理。因为直接输出有可能因为类型转换，导致报错
+import { myToString } from "../utils/string.js";
+
 /**
  * 创建一个处理 dom 的对象。这个对象浏览器才有，NodeJS 中是没有的。
  */
@@ -79,7 +83,7 @@ function report(moduleInfo, ...funcs) {
                 failArr.push(func.name);
             }
         }catch(err){
-            console.error(`发现一个测试函数异常 ${func.name}`, "==",err.name, "==", err);
+            console.error(`发现一个测试函数异常 ${myToString(func)}`, "==",err.name, "==", err);
             funcErrorCount += 1;
             // 记录失败的函数名
             failArr.push(func.name);
@@ -154,6 +158,55 @@ function isMapEquals(map1, map2) {
 }
 
 /**
+ * 比较2个 object 对象的值，是否相等。这个值指的是 key 和 value 2个方面。
+ * 如果 object1 或者 object2 不是 object 对象，直接返回 false 。如果 object1 和 object2 是空 object（没有键值对） ，直接 true 。
+ * 对于 value 比较，更多是一个 "===" 操作。这里不做递归判断
+ * @param {Object} object1 待匹配的 object 对象 1
+ * @param {Object} object2 待匹配的 object 对象 2
+ * @returns {boolean} 如果 2 个待匹配的 object 对象，key 和 value 均一致，则返回 true ；否则，返回 false
+ */
+function isObjectEquals(obj1, obj2) {
+    
+    // 定义一个返回值
+    let result = true;
+
+    // 首先判断是否为 object 对象，不是的话 false
+    if(!(typeof obj1 === 'object' && typeof obj2 === 'object')){
+        result = false;
+        return result;
+    }
+
+    // 判断 obj1 和 obj2 的 键值对数量是否匹配。不匹配的话，false
+    if(Object.keys(obj1).length !== Object.keys(obj2).length) {
+        result = false;
+        return result;
+    }
+
+    // 获取 obj1 的 keys，并转为数组
+    let myKeys = Object.keys(obj1);
+    // 开始匹配 value 内容
+    for(let i=0;i<myKeys.length;i++){
+        // 获取 obj1 的 临时 key  和 value
+        let tmpK1 = myKeys[i];
+        let tmpV1 = obj1[tmpK1];
+        // 先看看 obj2 有没有这个key。没有这个 key 就 false
+        if(!obj2.hasOwnProperty(tmpK1)){
+            result = false;
+            break;
+        }
+        // 有的话，再比对 value 是否相等。不等 就 false。（对于嵌套对象，暂时没有办法明确判断出值是否相等）
+        let tmpV2 = obj2[tmpK1]
+        if(tmpV2!==tmpV1){
+            result = false;
+            break;
+        }
+    }
+
+    // 返回结果 
+    return result;
+}
+
+/**
  * 这里是一个断言异常，一般用于表示断言判断失败。当预测值 和 实际值 不吻合，则抛出 断言异常。
  */
 class AssertError extends Error {
@@ -187,7 +240,7 @@ class Assert {
      * @throws 如果2值不等，抛出 AssertError 异常。
      */
     static equals(expectedValue, actualValue) {
-        let errMsg = `函数 ${this.equals.name} 监测出异常 expected=${expectedValue}, 但是 actual=${actualValue}`;
+        let errMsg = `函数 ${this.equals.name} 监测出异常 expected=${myToString(expectedValue)}, 但是 actual=${myToString(actualValue)}`;
         if(!(expectedValue==actualValue)) throw new AssertError(errMsg);
     }
 
@@ -198,7 +251,7 @@ class Assert {
      * @throws 如果2值不等，抛出 AssertError 异常。
      */
     static equalsStrictly(expectedValue, actualValue){
-        let errMsg = `函数 ${this.equalsStrictly.name} 监测出异常 expected=${expectedValue}, 但是 actual=${actualValue}`;
+        let errMsg = `函数 ${this.equalsStrictly.name} 监测出异常 expected=${myToString(expectedValue)}, 但是 actual=${myToString(actualValue)}`;
         if(!(expectedValue===actualValue)) throw new AssertError(errMsg);
     }
 
@@ -212,8 +265,30 @@ class Assert {
      * @throws 如果2值不等、参数类型不对，抛出 AssertError 异常。
      */
     static mapEquals(expectedMap, actualMap) {
-        let errMsg = `函数 ${this.mapEquals.name} 监测出异常 expectedMap=${expectedMap}, 但是 actualMap=${actualMap}`;
-        if(!isMapEquals(expectedMap, actualMap)) throw new AssertError(errMsg);
+        let errMsg = `函数 ${this.mapEquals.name} 监测出异常 expectedMap=${myToString(expectedMap)}, 但是 actualMap=${myToString(actualMap)}`;
+        if(!isMapEquals(expectedMap, actualMap)) {
+            // 如果不等于，那需要打印出不等的双方，然后再console比对
+            console.log(new Date(), "2个Map对象不相等", expectedMap, actualMap);
+            throw new AssertError(errMsg);
+        }
+    }
+
+    /**
+     * 判断2个object的内部值，是否相等。这里对比的核心是 object 对象的内部 key 和 value 是否相等。不等的话，抛 AssertError 异常。
+     * 如果 object 对象内部没有元素，那就直接 相等。
+     * 如果 object 对象内部有任何一个 key 和 value 不相等，则不相等。抛 AssertError 异常。
+     * 如果 2个待处理值，不是 object 对象，则直接抛 AssertError 异常。
+     * @param {object} expectedObject 期望值
+     * @param {object} actualObject 实际值
+     * @throws 如果2值不等、参数类型不对，抛出 AssertError 异常。
+     */
+    static objectEquals(expectedObject, actualObject) {
+        let errMsg = `函数 ${this.objectEquals.name} 监测出异常 expectedObject=${myToString(expectedObject)}, 但是 actualObject=${myToString(actualObject)}`;
+        if(!isObjectEquals(expectedObject, actualObject)) {
+            // 如果不等于，那需要打印出不等的双方，然后再console比对
+            console.log(new Date(), "2个Object对象不相等", expectedObject, actualObject);
+            throw new AssertError(errMsg);
+        }
     }
 
     /**
