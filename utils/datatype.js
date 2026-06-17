@@ -10,7 +10,7 @@
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2025-06-20
  * @description 这里是一个 数据处理的工具包，它划分了3个模块：base (基础数据类型处理)、object (对象类型数据处理)、 transform (数据转换处理)。
- * 在使用时，直接调用 datatype.js 模块的 DataUtil 就行了。3个子模块是为了方便以后扩展和修改，才拆分的。
+ * 在使用时，直接调用 datatype.js 模块就行了。3个子模块是为了方便以后扩展和修改，才拆分的。
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
@@ -38,12 +38,11 @@ import {
     // 两个常量
     TO_LOWERCASE,
     TO_UPPERCASE
- } from "./datatype/transform.js";
+} from "./datatype/transform.js";
 
-/**
- * 这是一个 数据处理的工具 常量。之前是一个静态类，由于要分开实现，所以改为一个常量。
- */
-const DataUtil = {
+
+// 把子模块的内容全部导出。在使用上这里是一个对外接口模块。因为内容太多不好管理，分开实现再统一导出。
+export {
     isNullValue, NotNullValue, /* 异常值 */
     isStringValue, isStringObject, isString, isEmptyString, valueOfString, /* 字符串 */
     isBooleanValue, isBooleanObject, isBoolean, valueOfBoolean, /* 布尔值 */
@@ -64,6 +63,3 @@ const DataUtil = {
     TO_LOWERCASE,
     TO_UPPERCASE
 }
-
-// 导出公用的模块
-export { DataUtil }

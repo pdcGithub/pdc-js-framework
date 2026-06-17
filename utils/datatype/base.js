@@ -16,6 +16,7 @@
 "use strict"; // 这是严格模式下的 Javascript 代码
 
 import { ParameterError } from "../../models/errors.js";
+import { myToString } from "../string.js";
 
 //============================== 这里处理特殊类型   ==========================================
 
@@ -213,10 +214,10 @@ function isRegexp(value){
  */
 function isRegexpOk(value, regexp){
     if(!isString(value)){
-        throw new ParameterError(`参数 ${ typeof value === 'symbol' ? value.toString() : value } 不是字符串，不能用非字符串的值来匹配正则表达式`);
+        throw new ParameterError(`参数 ${ myToString(value) } 不是字符串，不能用非字符串的值来匹配正则表达式`);
     }
     if(!isRegexp(regexp)){
-        throw new ParameterError(`参数 ${ typeof regexp === 'symbol' ? regexp.toString() : regexp } 不是正则表达式，无法匹配`);
+        throw new ParameterError(`参数 ${ myToString(regexp) } 不是正则表达式，无法匹配`);
     }
     return regexp.test(valueOfString(value));
 }

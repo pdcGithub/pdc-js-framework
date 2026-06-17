@@ -17,6 +17,7 @@
 
 import { NotNullValue, isString, isNumber, isBoolean, isSymbol, isRegexpOk } from "./base.js";
 import { ParameterError } from "../../models/errors.js";
+import { myToString } from "../string.js";
 
 //==============================  这里处理 函数  ==========================================
 
@@ -107,7 +108,7 @@ function isTargetObject(value, ...targetClass){
             if(isSymbol(val)) re = val.toString();
             return re;
         }).join(',');
-        throw new ParameterError(`isTargetObject 函数，接收的参数异常。不定参数 targetClass=${targetClassStr} 包含了一些不是类型(Class, Function)的内容，请检查。`);
+        throw new ParameterError(`isTargetObject 函数，接收的参数异常。不定参数 targetClass=${myToString(targetClassStr)} 包含了一些不是类型(Class, Function)的内容，请检查。`);
     }
     // 开始初始赋值
     let re = false;

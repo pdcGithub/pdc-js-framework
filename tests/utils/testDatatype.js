@@ -17,7 +17,7 @@
 import { Assert } from "../testTools.js";
 
 // 导入要测试的常量（这个只是对外接口，引入即可）
-import { DataUtil as du } from "../../utils/datatype.js";
+import * as du from "../../utils/datatype.js";
 
 // 导入 各个子模块 测试函数
 import {
