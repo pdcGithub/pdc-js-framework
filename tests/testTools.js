@@ -295,6 +295,7 @@ class Assert {
      * 判断参数传入的函数，是否有抛出 errorClasses 指定的一些异常类
      * @param {Function} func 这是一个待执行的无参函数
      * @param  {...Error} errorClasses 这是一个不定参数，内容是异常类。即Error类或者它的子类
+     * @returns {Error} 如果执行成功，抛出指定异常，则返回这个异常对象 errOfFunc
      * @throws 如参数类型不对，或者指定的函数没有抛异常、没有抛出指定异常；抛出 AssertError 异常。
      */
     static throwsErrors(func, ...errorClasses) {
@@ -321,7 +322,53 @@ class Assert {
             }
         }
         // 如果没有符合的异常类
-        if(!isExist) throw new AssertError(`函数 ${this.throwsErrors.name} 检测到异常抛出 ${errOfFunc.name}，但是没有在指定的异常类名单内。${errorClasses.join(',')}`);
+        if(!isExist) throw new AssertError(
+            `函数 ${this.throwsErrors.name} 检测到异常抛出 ${errOfFunc.name}，但是没有在指定的异常类名单内。${myToString(errorClasses)}`
+        );
+
+        // 如果有异常，则返回这个异常，方便其它程序处理
+        return errOfFunc;
+    }
+
+    /**
+     * 判断参数传入的函数，是否有抛出 errorClasses 指定的一些异常类。在 throwsErrors 基础上，增加对异常消息的校验。
+     * 这个函数的作用是，当你抛出了一些同类型异常，那就需要判断 message 内容，是否为你想要的。
+     * @param {Function} func 这是一个待执行的无参函数
+     * @param {RegExp} messageRegexp 用于异常信息校验的正则对象 或者 正则表达式
+     * @param  {...Error} errorClasses errorClasses 这是一个不定参数，内容是异常类。即Error类或者它的子类
+     * @throws 如参数类型不对、指定的函数没有抛异常、没有抛出指定异常、异常信息不匹配；抛出 AssertError 异常。
+     */
+    static throwsErrorsWithMsg(func, messageRegexp, ...errorClasses){
+
+        // 检验 messageRegexp 是否为正则表达式 或者 正则对象
+        if(!(messageRegexp instanceof RegExp)) {
+            throw new AssertError(
+                `函数 ${this.throwsErrorsWithMsg.name} 的参数 messageRegexp=${myToString(messageRegexp)} 不是正则对象或者表达式。`
+            );
+        }
+
+        // 先执行一次，看看是否有异常
+        // 如参数类型不对，或者指定的函数没有抛异常、没有抛出指定异常；抛出 AssertError 异常。
+        // 如果执行成功，抛出指定异常，则返回这个异常对象 errOfFunc
+        let errOfFunc = undefined ;
+        try{
+            errOfFunc = this.throwsErrors(func, ...errorClasses);
+        }catch(myError){
+            // 如果捕捉到异常，那说明 throwsErrors 函数检验不通过。抛出到外部即可。
+            throw myError;
+        }
+        
+        // 这里应该有结果的。因为如果 errOfFunc 如果没有，在 throwsErrors 已经处理了。
+        if(errOfFunc!==undefined){
+            let message = errOfFunc.message ? errOfFunc.message.trim() : '';
+            if(!messageRegexp.test(message)) {
+                throw new AssertError(
+                    `函数 ${this.throwsErrorsWithMsg.name} 检测到的异常信息不符合预期。 regexp=${messageRegexp} msg=${message}`
+                );
+            }
+        }else{
+            throw new AssertError(`函数 ${this.throwsErrorsWithMsg.name} 没有检测到任何的异常被抛出。`);
+        }
     }
 
     /**
