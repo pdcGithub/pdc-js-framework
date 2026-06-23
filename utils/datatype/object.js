@@ -15,7 +15,7 @@
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
-import { NotNullValue, isString, isNumber, isBoolean, isSymbol, isRegexpOk } from "./base.js";
+import { NotNullValue, isString, isNumber, isBoolean, isSymbol, isRegexpOk, isNullValue } from "./base.js";
 import { ParameterError } from "../../models/errors.js";
 import { myToString } from "../string.js";
 
@@ -34,12 +34,40 @@ function isFunction(value){
 
 /**
  * 判断传入的参数，是否为一个可以创建对象的类。在 JS 中 function 和 class 都可以 new 对象，它们都是类。
+ * 注意：这里排除 空（undefined、null、NaN）以及 匿名函数、箭头函数。因为箭头函数无法做 instanceof 判断。
  * @param {*} value 待处理的参数
  * @returns {boolean} 如果可实例化，则返回 true ；否则，返回 false
  */
 function isClass(value){
+
+    // 这里要排除 空、箭头函数，只保留 class 和 普通函数
+
+    // 定义返回结果
+    let re = true ;
+
     // null 和 undefined 没有 toString 方法，所以要先排除 异常值 
-    return NotNullValue(value) && (isFunction(value) || /^[\s]*class/i.test(value.toString()));
+    if(isNullValue(value)) {
+        re = false;
+        return re;
+    }
+
+    // 排除非函数 、匿名函数、 箭头函数
+    if(typeof value !== 'function' || value.name === '' || value.prototype === undefined){
+        re = false;
+        return re;
+    }
+
+    // 如果是 普通函数 或者 class ，则返回 true
+    if(typeof value === 'function' || /^[\s]*class/i.test(value.toString())){
+        re = true;
+        return re;
+    }else{
+        // 其它 返回 false
+        re = false;
+    }
+
+    // 返回
+    return re;
 }
 
 /**

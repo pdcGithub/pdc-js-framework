@@ -109,8 +109,9 @@ function testIsClass(){
     Assert.equalsStrictly(true, isClass(Error)); // 在 JavaScript 中，类是特殊函数。函数也可以通过 new 处理，所以函数也是一个类
     Assert.equalsStrictly(true, isClass(ParameterError)); 
     // 函数
-    Assert.equalsStrictly(true, isClass(()=>{}));
-    Assert.equalsStrictly(true, isClass(function(){}));
+    Assert.equalsStrictly(true, isClass(testIsClass));
+    Assert.equalsStrictly(false, isClass(()=>{}));     // 匿箭头函数 和 匿名函数，不属于 class
+    Assert.equalsStrictly(false, isClass(function(){}));
     // 普通对象
     Assert.equalsStrictly(false, isClass(new ParameterError('异常信息对象')));
     Assert.equalsStrictly(false, isClass(new String('ssssss')));
@@ -375,7 +376,12 @@ function testIsTargetObject(){
     Assert.throwsErrors(()=>{ isTargetObject('xxx', [[]]); }, ParameterError);
     Assert.throwsErrors(()=>{ isTargetObject('xxx', [[1,2,3], [4,5,6]]); }, ParameterError);
 
+    // 如果 class 数组有函数，并且是匿名函数、箭头函数，他需要返回 ParameterError
+    Assert.throwsErrors(()=>{ isTargetObject(/123/, function(){}) }, ParameterError);
+    Assert.throwsErrors(()=>{ isTargetObject(/123/, ()=>{}) }, ParameterError);
+
     // ========= 正常值测试
+
     Assert.equalsStrictly(false, isTargetObject(undefined, Error));
     Assert.equalsStrictly(false, isTargetObject(null, Error));
     Assert.equalsStrictly(false, isTargetObject(NaN, Error));
