@@ -9,12 +9,12 @@
  * @file This file "VerificationError.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2026-03-03
- * @description 这是关于操作验证时发生的异常。
+ * @description 这是由 valid 模块抛出的参数校验异常。通常在 verify.js 和 auto.js 2个地方抛出
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
 /**
- * 自定义的一个 Error 类。它用于表示 操作验证时发生的异常
+ * 自定义的一个 Error 类。它用于表示 由 valid 模块抛出的参数校验异常。通常在 verify.js 和 auto.js 2个地方抛出
  */
 class VerificationError extends Error {
 
