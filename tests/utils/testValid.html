@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这里是 utils/valid.js 的测试页面</title>
+</head>
+<body>
+    <!-- 
+    说明：这里是 utils/datatype.js 模块的测试程序。
+        为了方便测试，我这里一般都是直接运行 js 代码，然后把结果写入 页面的结果区。即 id 是 result 的 div 区域
+    -->
+    <div id="result">
+    </div>
+
+    <!-- 这里是运行测试过程的代码 -->
+    <script type="module">
+    // 导入测试函数
+    import { 
+        testThrowError, testThrowParameterError, testThrowClassCreationError, testThrowCannotNewError,
+
+        testValidString, testValidBoolean, testValidNumber, testValidRegExp, testValidFunction,
+        testValidClass, testValidTargetClass, testValidObject, testValidArray, testValid2DArray,
+        testValidObjectLiteral, testValidTargetObject, testValidTargetObjectSet, testValidTargetObjectArray, testValidTargetObject2DArray,
+        testValidHtmlElement, testValidHtmlElementList,
+
+        testHandleDescInfoObj,
+        testAutoVnAofString, testAutoVnAofNumber, testAutoVnAofBoolean, testAutoVnAofRegExp,
+        testAutoVnAofMap, testAutoVnAofSet, testAutoVnAofArray, testAutoVnAof2DArray,
+        testAutoVnAofObjectLiteral, testAutoVnAofTargetObject, testAutoVnAofTargetObjectSet, testAutoVnAofTargetObjectArray,
+        testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList,
+
+        testValidUtil
+    } from "./testValid.js";
+    // 导入 report 函数
+    import { report } from "../testTools.js";
+    // 执行测试
+    report('utils/valid/throw.js 子模块', testThrowError, testThrowParameterError, testThrowClassCreationError, testThrowCannotNewError);
+    report('utils/valid/verify.js 子模块', testValidString, testValidBoolean, testValidNumber, testValidRegExp, testValidFunction,
+                                        testValidClass, testValidTargetClass, testValidObject, testValidArray, testValid2DArray,
+                                        testValidObjectLiteral, testValidTargetObject, testValidTargetObjectSet, testValidTargetObjectArray, testValidTargetObject2DArray,
+                                        testValidHtmlElement, testValidHtmlElementList);
+    report('utils/valid/auto.js 子模块', testHandleDescInfoObj,
+                                        testAutoVnAofString, testAutoVnAofNumber, testAutoVnAofBoolean, testAutoVnAofRegExp,
+                                        testAutoVnAofMap, testAutoVnAofSet, testAutoVnAofArray, testAutoVnAof2DArray,
+                                        testAutoVnAofObjectLiteral, testAutoVnAofTargetObject, testAutoVnAofTargetObjectSet, testAutoVnAofTargetObjectArray,
+                                        testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList);
+    report('utils/valid.js', testValidUtil);
+    </script>
+</body>
+</html>

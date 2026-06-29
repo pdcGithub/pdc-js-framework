@@ -276,7 +276,7 @@ function testThrowCannotNewError(){
     Assert.throwsErrors(()=>{ throwCannotNewError(true, Symbol.for('guid')); }, ParameterError);
     Assert.throwsErrors(()=>{ throwCannotNewError(true, Error); }, ClassCreationError);
     Assert.throwsErrors(()=>{ throwCannotNewError(true, testThrowError); }, ClassCreationError);
-    Assert.throwsErrors(()=>{ throwCannotNewError(true, ()=>{}); }, ClassCreationError);
+    Assert.throwsErrors(()=>{ throwCannotNewError(true, ()=>{}); }, ParameterError); // 箭头函数不算是 class 或者 普通function。因为它没法用 instanceof
     Assert.throwsErrors(()=>{ throwCannotNewError(true, [1,2,3]); }, ParameterError);
     Assert.throwsErrors(()=>{ throwCannotNewError(true, new Map([['a', 1], ['b', 2]])); }, ParameterError);
     Assert.throwsErrors(()=>{ throwCannotNewError(true, new Set([1,2,3])); }, ParameterError);
