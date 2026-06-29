@@ -27,6 +27,7 @@ import { Assert } from "../../testTools.js";
 
 // =============== 导入要处理的异常类
 import { ParameterError } from "../../../models/errors.js";
+import { ObjectLiteral } from "../../../models/normal.js";
 
 // =============== 开始测试
 
@@ -296,6 +297,8 @@ function testIsObjectLiteral(){
 
     /**
      * 对象字面量一般是 {a:1, b:2} 这样的。但是也可以是 new 出来的。字面量只是排除了 Array 类型。
+     * 注意：对象字面量，它应该是一个通过 {} 或者 new Object() 创建的普通对象; 
+     * 它不能是其它常规对象，比如：Array, String, Number, Boolean, Map, Set, RegExp 等等。
      */
 
     // 空
@@ -306,21 +309,21 @@ function testIsObjectLiteral(){
     // 字符串
     Assert.equalsStrictly(false, isObjectLiteral(''));
     Assert.equalsStrictly(false, isObjectLiteral('xxx'));
-    Assert.equalsStrictly(true, isObjectLiteral(new String('')));
-    Assert.equalsStrictly(true, isObjectLiteral(new String('aaa')));
+    Assert.equalsStrictly(false, isObjectLiteral(new String('')));
+    Assert.equalsStrictly(false, isObjectLiteral(new String('aaa')));
     // 数字
     Assert.equalsStrictly(false, isObjectLiteral(1));
     Assert.equalsStrictly(false, isObjectLiteral(-1));
-    Assert.equalsStrictly(true, isObjectLiteral(new Number(1)));
-    Assert.equalsStrictly(true, isObjectLiteral(new Number(-1)));
+    Assert.equalsStrictly(false, isObjectLiteral(new Number(1)));
+    Assert.equalsStrictly(false, isObjectLiteral(new Number(-1)));
     // 布尔
     Assert.equalsStrictly(false, isObjectLiteral(true));
     Assert.equalsStrictly(false, isObjectLiteral(false));
-    Assert.equalsStrictly(true, isObjectLiteral(new Boolean(true)));
-    Assert.equalsStrictly(true, isObjectLiteral(new Boolean(false)));
+    Assert.equalsStrictly(false, isObjectLiteral(new Boolean(true)));
+    Assert.equalsStrictly(false, isObjectLiteral(new Boolean(false)));
     // 正则
-    Assert.equalsStrictly(true, isObjectLiteral(/123/));
-    Assert.equalsStrictly(true, isObjectLiteral(new RegExp('123')));
+    Assert.equalsStrictly(false, isObjectLiteral(/123/));
+    Assert.equalsStrictly(false, isObjectLiteral(new RegExp('123')));
     // Symbol
     Assert.equalsStrictly(false, isObjectLiteral(Symbol.for('uid'))); // Symbol 是原始类型，不是对象。
     // 类
@@ -330,11 +333,13 @@ function testIsObjectLiteral(){
     Assert.equalsStrictly(false, isObjectLiteral(()=>{}));
     Assert.equalsStrictly(false, isObjectLiteral(function(){}));
     // 普通对象
-    Assert.equalsStrictly(true, isObjectLiteral(new ParameterError('异常信息对象')));
-    Assert.equalsStrictly(true, isObjectLiteral(new String('ssssss')));
+    Assert.equalsStrictly(false, isObjectLiteral(new ParameterError('异常信息对象')));
+    Assert.equalsStrictly(false, isObjectLiteral(new String('ssssss')));
     Assert.equalsStrictly(true, isObjectLiteral({a:1, b:2})); // 对象字面量
-    Assert.equalsStrictly(true, isObjectLiteral(new Set([1,2]))); // set
-    Assert.equalsStrictly(true, isObjectLiteral(new Map())); // map
+    Assert.equalsStrictly(true, isObjectLiteral({})); // 对象字面量
+    Assert.equalsStrictly(true, isObjectLiteral(new Object())); // 对象字面量
+    Assert.equalsStrictly(false, isObjectLiteral(new Set([1,2]))); // set
+    Assert.equalsStrictly(false, isObjectLiteral(new Map())); // map
     // 数组（数组是一个对象）
     Assert.equalsStrictly(false, isObjectLiteral([]));
     Assert.equalsStrictly(false, isObjectLiteral([1,2,3]));
@@ -435,6 +440,10 @@ function testIsTargetObject(){
     Assert.equalsStrictly(true, isTargetObject([1,2,3],            Error, Array));
     Assert.equalsStrictly(true, isTargetObject([[]],               Error, Array));
     Assert.equalsStrictly(true, isTargetObject([[1,2,3], [4,5,6]], Error, Array));
+
+    // 对象区分
+    Assert.equalsStrictly(false, isTargetObject({}, Error, Map));
+    Assert.equalsStrictly(true, isTargetObject({}, Error, Map, ObjectLiteral));
 }
 
 function testIsTargetObjectSet(){

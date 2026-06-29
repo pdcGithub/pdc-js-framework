@@ -15,9 +15,10 @@
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
-import { NotNullValue, isString, isNumber, isBoolean, isSymbol, isRegexpOk, isNullValue } from "./base.js";
+import { NotNullValue, isString, isNumber, isBoolean, isSymbol, isRegexpOk, isNullValue, isRegexp } from "./base.js";
 import { ParameterError } from "../../models/errors.js";
 import { myToString } from "../string.js";
+import { ObjectLiteral } from "../../models/normal.js";
 
 //==============================  这里处理 函数  ==========================================
 
@@ -107,12 +108,18 @@ function isObject(value){
 }
 
 /**
- * 判断传来的参数，是否是一个对象 字面量，比如：{1:'1', a:'A'}。因为，Array 的 typeof 值，也是一个 object ，所以要排除。
+ * 判断传来的参数，是否是一个对象 字面量，比如：{1:'1', a:'A'}。
+ * 注意：对象字面量，它应该是一个通过 {} 或者 new Object() 创建的普通对象; 
+ * 它不能是其它常规对象，比如：Array, String, Number, Boolean, Map, Set, RegExp, Error 等等。
  * @param {*} value 待判断参数
  * @returns {boolean} 如果 value 为 对象 字面量 ，则返回 true；否则，返回 false
  */
 function isObjectLiteral(value){
-    return isObject(value) && !Array.isArray(value);
+    return isObject(value) && (
+        !Array.isArray(value) 
+            && !isString(value) && !isNumber(value) && !isBoolean(value) && !isRegexp(value) 
+            && !(value instanceof Map) && !(value instanceof Set) && !(value instanceof Error)
+    );
 }
 
 /**
@@ -159,6 +166,10 @@ function isTargetObject(value, ...targetClass){
         case Symbol:
             // 如果目标是 Symbol 值，则需要判断
             re = isSymbol(value);
+            break;
+        case ObjectLiteral:
+            // 如果是 对象字面量，需要单独处理
+            re = isObjectLiteral(value);
             break;
         default:
             // 对于 对象判断，首先要保证 value 是对象。否则的话，像 Error instanceof Object 会判断为成立的
