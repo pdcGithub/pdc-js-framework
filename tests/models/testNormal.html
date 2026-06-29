@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>异常类模块 models/normal.js 测试页面</title>
+</head>
+<body>
+    <!-- 
+    说明：这里是 models 中的 normal.js 模块的测试程序。
+        为了方便测试，我这里一般都是直接运行 js 代码，然后把结果写入 页面的结果区。即 id 是 result 的 div 区域
+    -->
+    <div id="result">
+    </div>
+    <!-- 这里是运行测试过程的代码 -->
+    <script type="module">
+    // 导入测试函数
+    import { testObjectLiteral } from "./testNormal.js";
+    // 导入 report 函数
+    import { report } from "../testTools.js";
+    // 执行测试
+    report('models/normal.js', testObjectLiteral);
+    </script>
+</body>
+</html>
