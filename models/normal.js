@@ -9,25 +9,13 @@
  * @file This file "normal.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2026-06-29
- * @description  这里是一些普通的数据模型。
+ * @description  这里是自定义普通类的 一个 公用接口模块。保证对外接口一致。
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
-/**
- * 这个类用于表示“对象字面量”。因为字面量不是普通的对象，没法用 Object 来作为类型，所以单独搞一个 ObjectLiteral 类，方便类型检测。
- */
-class ObjectLiteral extends Object {
+import { ObjectLiteral } from "./normal/ObjectLiteral.js";
 
-    /**
-     * 这里创建一个 ObjectLiteral 对象。因为字面量不是普通的对象，没法用 Object 来作为类型，所以单独搞一个 ObjectLiteral 类，方便类型检测
-     * @param {String} message 一个描述信息字符串
-     */
-    constructor(){
-        super();
-        this.name = ObjectLiteral.name;
-    }
-}
-
+//======== 导出到外部共享
 export {
-    ObjectLiteral
+    ObjectLiteral /* 这是对象字面量的类 */
 }
