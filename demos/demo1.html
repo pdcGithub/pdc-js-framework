@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>demo 1</title>
+</head>
+<body>
+
+    <script type="module">
+
+    // == import function drawTag from module html.js
+    import { drawTag, DOM_PARSER } from "../utils/html.js";
+
+    // == create a tag and write it into the page.
+    let divStr = drawTag('div', {id:'test1', name:'testName'}, 'I am a test div.');
+    let newDoc = DOM_PARSER.parseFromString(divStr, 'text/html');
+
+    document.body.append(newDoc.getElementById('test1'));
+
+    </script>
+    
+</body>
+</html>
