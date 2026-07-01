@@ -12,6 +12,84 @@
     -->
     <div id="result">
     </div>
+    
+    <!-- 这里是运行测试过程的代码 -->
+    <script type="module">
+    // 导入测试函数
+    import { testClassCreationError, testParameterError, testVerificationError } from "./models/testErrors.js";
+    import { testObjectLiteral } from "./models/testNormal.js";
+    import { 
+        // == 
+        testIsNullValue, testNotNullValue,
+        testIsStringValue, testIsStringObject, testIsString, testIsEmptyString, testValueOfString,
+        testIsBooleanValue, testIsBooleanObject, testIsBoolean, testValueOfBoolean,
+        testIsNumberValue, testIsNumberObject, testIsNumber, testValueOfNumber,
+        testIsSymbol, testIsRegexp, testIsRegexpOk,
+        // == 
+        testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
+        testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
+        testIsHtmlElement, testIsHtmlElementList,
+        // == 
+        testToLowerCase, testToUpperCase, 
+        testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase,
+        // == 
+        testDataUtil
+    } from "./utils/testDatatype.js";
+    import { 
+        testThrowError, testThrowParameterError, testThrowClassCreationError, testThrowCannotNewError,
 
+        testValidString, testValidBoolean, testValidNumber, testValidRegExp, testValidFunction,
+        testValidClass, testValidTargetClass, testValidObject, testValidArray, testValid2DArray,
+        testValidObjectLiteral, testValidTargetObject, testValidTargetObjectSet, testValidTargetObjectArray, testValidTargetObject2DArray,
+        testValidHtmlElement, testValidHtmlElementList,
+
+        testHandleDescInfoObj,
+        testAutoVnAofString, testAutoVnAofNumber, testAutoVnAofBoolean, testAutoVnAofRegExp,
+        testAutoVnAofMap, testAutoVnAofSet, testAutoVnAofArray, testAutoVnAof2DArray,
+        testAutoVnAofObjectLiteral, testAutoVnAofTargetObject, testAutoVnAofTargetObjectSet, testAutoVnAofTargetObjectArray,
+        testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList,
+
+        testValidUtil
+    } from "./utils/testValid.js";
+    import { testMyToString } from "./utils/testString.js";
+    import { testDomParser, testDrawTag } from "./utils/testHtml.js";
+
+    // 导入 report 函数
+    import { report } from "./testTools.js";
+
+    // 执行测试
+    report('models/errors.js', testClassCreationError, testParameterError, testVerificationError);
+    report('models/normal.js', testObjectLiteral);
+    report('utils/datatype.js', testIsNullValue, testNotNullValue,
+                                testIsStringValue, testIsStringObject, testIsString, testIsEmptyString, testValueOfString,
+                                testIsBooleanValue, testIsBooleanObject, testIsBoolean, testValueOfBoolean,
+                                testIsNumberValue, testIsNumberObject, testIsNumber, testValueOfNumber,
+                                testIsSymbol, testIsRegexp, testIsRegexpOk,
+                                // == 
+                                testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
+                                testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
+                                testIsHtmlElement, testIsHtmlElementList,
+                                // == 
+                                testToLowerCase, testToUpperCase, 
+                                testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase,
+                                // == 
+                                testDataUtil);
+    report('utils/valid.js', testThrowError, testThrowParameterError, testThrowClassCreationError, testThrowCannotNewError,
+
+                            testValidString, testValidBoolean, testValidNumber, testValidRegExp, testValidFunction,
+                            testValidClass, testValidTargetClass, testValidObject, testValidArray, testValid2DArray,
+                            testValidObjectLiteral, testValidTargetObject, testValidTargetObjectSet, testValidTargetObjectArray, testValidTargetObject2DArray,
+                            testValidHtmlElement, testValidHtmlElementList,
+
+                            testHandleDescInfoObj,
+                            testAutoVnAofString, testAutoVnAofNumber, testAutoVnAofBoolean, testAutoVnAofRegExp,
+                            testAutoVnAofMap, testAutoVnAofSet, testAutoVnAofArray, testAutoVnAof2DArray,
+                            testAutoVnAofObjectLiteral, testAutoVnAofTargetObject, testAutoVnAofTargetObjectSet, testAutoVnAofTargetObjectArray,
+                            testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList,
+
+                            testValidUtil);
+    report('utils/string.js', testMyToString);
+    report('utils/html.js', testDomParser, testDrawTag);
+    </script>
 </body>
 </html>
