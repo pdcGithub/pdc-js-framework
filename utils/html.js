@@ -7,6 +7,7 @@
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
  * @file This file "html.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module utils/html
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2025-06-09
  * @description  这是一个 html 绘制工具
@@ -37,7 +38,8 @@ try{
 const DOM_PARSER = tmpParser;
 
 /**
- * 一些没有结束标签的标签名
+ * 一些没有结束标签的标签名 (这里不是对外 export 的内容)
+ * @ignore
  */
 const SINGLE_TAGS = ["meta", "link", "br", "hr"];
 

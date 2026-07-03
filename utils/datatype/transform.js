@@ -7,6 +7,7 @@
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
  * @file This file "transform.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module utils/datatype/transform
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2025-08-11
  * @description  这是作为数据类型处理的一个 数据转换 工具包

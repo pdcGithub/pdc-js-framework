@@ -7,10 +7,12 @@
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
  * @file This file "datatype.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module utils/datatype
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2025-06-20
  * @description 这里是一个 数据处理的工具包，它划分了3个模块：base (基础数据类型处理)、object (对象类型数据处理)、 transform (数据转换处理)。
  * 在使用时，直接调用 datatype.js 模块就行了。3个子模块是为了方便以后扩展和修改，才拆分的。
+ * （注意：请不要直接调用这个模块下面的子模块，因为它们可能修改路径。使用时，请统一导入本模块。）
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 

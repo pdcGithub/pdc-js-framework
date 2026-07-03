@@ -7,6 +7,7 @@
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
  * @file This file "verify.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module utils/valid/verify
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2025-08-12
  * @description  这是校验处理的基础模块，它负责 一些简便的 校验处理

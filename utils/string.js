@@ -7,6 +7,7 @@
  * Copyright © 2026 Micheal Pang. All rights reserved.
  * 
  * @file This file "string.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module utils/string
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2026-06-15
  * @description  这是一个字符串处理的工具模块。因为不明确这个模块会用在哪个地方，所以最好不要有外部依赖。

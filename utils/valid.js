@@ -7,9 +7,11 @@
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
  * @file This file "valid.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module utils/valid
  * @author  Micheal Pang (Dongcan Pang)
  * @createDate  2025-08-12
  * @description  这是一个用于校验信息的模块，它附带一些处理
+ * （注意：请不要直接调用这个模块下面的子模块，因为它们可能修改路径。使用时，请统一导入本模块。）
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 

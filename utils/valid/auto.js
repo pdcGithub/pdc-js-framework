@@ -7,6 +7,7 @@
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
  * @file This file "auto.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module utils/valid/auto
  * @author  Micheal Pang (Dongcan Pang)
  * @since  2025-08-12
  * @description  这个模块，主要用作参数自动化处理（参数自动校验，自动赋值）
@@ -178,7 +179,7 @@ function autoVnAofArray(param, descInfoObj){
  * 校验2D Array (二维数组)类型的参数。如果不是2D Array (二维数组)类型的参数，则抛出异常 VerificationError ；如果是2D Array (二维数组)类型参数，则自动获取其值，并返回。
  * @param {*} param 待校验的参数
  * @param {object} descInfoObj 它应该是一个 对象字面量，包含需要特定3个信息 className、methodName、paramName。默认的话是 default 开头的字符串。
- * @returns {Array<Array<object>} 参数 param 的2D Array (二维数组)
+ * @returns {Array<Array<object>>} 参数 param 的2D Array (二维数组)
  * @throws 如果参数 param 校验不通过，会抛出 VerificationError 异常。如果入参（指 param 和 descInfoObj 以外的参数）不符合数据类型要求，抛出 ParameterError 异常。
  */
 function autoVnAof2DArray(param, descInfoObj){
