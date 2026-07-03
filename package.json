@@ -1,0 +1,21 @@
+{
+  "name": "pdc-js-framework",
+  "version": "preview-x.0.1",
+  "description": "This is an experimental JavaScript framework, which can also be called a toolkit. It's all programmed using ECMAScript 6+ syntax.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "jsdoc models/ utils/ -d docs -r -t node_modules/docdash"
+  },
+  "keywords": [],
+  "author": "Dongcan Pang (Michael Pang)",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "docdash": "^2.0.2",
+    "jsdoc": "^4.0.5"
+  }
+}
