@@ -85,3 +85,27 @@ The demo code is written based on HTML and native JavaScript. When testing it, i
 # 4. About Internationalization
 
 Because I am an individual developer and currently do not have time to handle internationalization. Therefore, the code comments and exception descriptions will include Simplified Chinese.
+
+# 5. About API Documentation
+
+I suggest everyone use the `npm` tool to generate API docs. In the third-party libraries of `npm`, there’s a plugin called `JSDoc`. Generally speaking, when installing `NodeJS`, it comes with these three command-line tools: `node`, `npm`, and `npx`. As for installing dependencies, it is recommended to install them in the directory of this project, rather than globally. If you want to generate API documentation, you can refer to the following script:
+
+```bash
+# note: This is just an example, please fill in the command content according to the actual situation.
+
+# 1. Clone project and jump into the folder of this project. 
+git clone <this-repo-url>
+cd this-project
+
+# 2. Install all dependencies (install everything locally in node_modules)
+npm install
+
+# 3. Run jsdoc to generate API docs
+npm run docs
+```
+
+After the command runs successfully, you'll see a folder named `docs`. Just find the `index.html` inside and open it with your browser. 
+
+The browser interface you see may look like this:
+
+![API page](./demos/doc.jpg)
