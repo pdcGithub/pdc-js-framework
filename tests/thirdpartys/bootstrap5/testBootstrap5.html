@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这里是 Bootstrap 5 的测试画面</title>
+    <link href="../../../thirdpartys/bootstrap5/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="../../../thirdpartys/bootstrap5/bootstrap.css" rel="stylesheet"/>
+    
+</head>
+<body>
+    <h2>这里主要是测试 Bootstrap 5 的各个常规样式和效果，能否正常显示。</h2>
+    <h2>因为 Bootstrap 会进行版本升级。所以，这里保留一个页面，方便后续观察样式是否有异常。</h2>
+    
+    <hr/>
+    <h3>1. layout 样式检查</h3>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4 p-2" style="background-color: lightblue;">测试1</div>
+            <div class="col-4 p-2" style="background-color: lightgray;">测试2</div>
+            <div class="col-4 p-2" style="background-color: lightcoral;">测试3</div>
+        </div>
+        <div class="row">
+            <div class="col-6 p-2" style="background-color: lightpink;">测试4</div>
+            <div class="col-6 p-2" style="background-color: lightgreen;">测试5</div>
+        </div>
+    </div>
+
+    <hr/>
+    <h3>2. form 样式检查</h3>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6 p-2" id="leftForm">
+                <form onsubmit="return false;">
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">邮件地址</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="email ...">
+                        <div id="emailHelp" class="form-text">请填写一个邮件地址。比如: myemail@demo.com</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">请选择我</label>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="btn1Click()">提交</button>
+                </form>
+            </div>
+            <div class="col-6 p-2" id="rightForm">
+                <form onsubmit="return false;">
+                    <div class="mb-3">
+                        <label for="disabledTextInput" class="form-label">禁用的输入框</label>
+                        <input type="text" id="disabledTextInput" class="form-control" placeholder="测试 ..." disabled>
+                        <div class="form-text">这里测试禁用的输入框</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="disabledSelect" class="form-label">选择框</label>
+                        <select id="disabledSelect" class="form-select">
+                            <option>-- 请选择 --</option>
+                            <option>选项 1</option>
+                            <option>选项 2</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
+                            <label class="form-check-label" for="disabledFieldsetCheck">
+                                这里无法选择
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="btn2Click()">提交 2</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+    <h3>3. btutton 样式检查</h3>
+
+    <div class="p-2">
+        <button class="btn btn-primary">样例1</button>
+        <button class="btn btn-secondary">样例2</button>
+        <button class="btn btn-success">样例3</button>
+        <button class="btn btn-danger">样例4</button>
+        <button class="btn btn-warning">样例5</button>
+        <button class="btn btn-info">样例6</button>
+        <button class="btn btn-light">样例7</button>
+        <button class="btn btn-link">样例8</button>
+    </div>
+    <div class="p-2">
+        <button class="btn btn-outline-primary">样例11</button>
+        <button class="btn btn-outline-secondary">样例12</button>
+        <button class="btn btn-outline-success">样例13</button>
+        <button class="btn btn-outline-danger">样例14</button>
+        <button class="btn btn-outline-warning">样例15</button>
+        <button class="btn btn-outline-info">样例16</button>
+        <button class="btn btn-outline-light">样例17</button>
+        <button class="btn btn-outline-dark">样例18</button>
+    </div>
+    
+    <hr/>
+    <h3>4. BS组件 样式检查</h3>
+
+    <div id="bsTest" class="p-2">
+        <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+        打开隐藏页面 1
+        </a>
+        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+        打开隐藏页面 2
+        </button>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div>
+                    这里是隐藏的页面内容
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+    <h3>5. icons图标 样式检查</h3>
+
+    <div id="testIcon" class="p-2">
+        <button id="tIcon1" class="btn btn-primary">测试 <i class="bi bi-1-circle"></i></button>
+        <button id="tIcon2" class="btn btn-primary">测试 <i class="bi bi-2-circle"></i></button>
+        <button id="tIcon3" class="btn btn-primary">测试 <i class="bi bi-3-circle"></i></button>
+        <button id="tIcon4" class="btn btn-primary">测试 <i class="bi bi-4-circle"></i></button>
+    </div>
+
+    <hr/>
+    <h3>测试结束</h3>
+
+    <!-- 引入 bootstrap 的 js 插件。这写插件可用可不用 -->
+    <script src="../../../thirdpartys/bootstrap5/bootstrap.bundle.min.js"></script>
+    <!-- 引入本页面测试用的 js 程序 -->
+    <script src="./testBootstrap5.js"></script>
+</body>
+</html>
