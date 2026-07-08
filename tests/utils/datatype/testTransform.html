@@ -17,13 +17,15 @@
     <script type="module">
     // 导入测试函数
     import { 
-        testToLowerCase, testToUpperCase, testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase
+        testToLowerCase, testToUpperCase, testObjToMap, testGenMap, 
+        testCopyObject, testMergeObject, testMergeObjectIgnoreCase, testHtmlElementListToArray
     } from "./testTransform.js";
     // 导入 report 函数
     import { report } from "../../testTools.js";
     // 执行测试
     report('utils/datatype/transform.js', 
-                testToLowerCase, testToUpperCase, testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase);
+                testToLowerCase, testToUpperCase, testObjToMap, testGenMap, 
+                testCopyObject, testMergeObject, testMergeObjectIgnoreCase, testHtmlElementListToArray);
     </script>
 </body>
 </html>

@@ -17,7 +17,7 @@
 "use strict"; // 这是严格模式下的 Javascript 代码
 
 import { isString, isEmptyString, isNumber, isBoolean, valueOfBoolean, valueOfString, valueOfNumber, isRegexpOk } from "./base.js";
-import { isObject, isFunction, isTargetObjectArray } from "./object.js";
+import { isObject, isFunction, isTargetObjectArray, isHtmlElementList } from "./object.js";
 import { ParameterError } from "../../models/errors.js";
 import { myToString } from "../string.js"
 
@@ -192,6 +192,24 @@ function mergeObjectIgnoreCase(caseStr, oriObj, ...others) {
 }
 
 /**
+ * 将 html 元素 集合对象 ( HTMLCollection 或者 NodeList ) 转换为 数组对象
+ * @param {HTMLCollection | NodeList} elementList html 元素 集合对象
+ * @returns {Array<object>} 数组对象
+ * @throws 如果参数校验不通过，会抛出 ParameterError 异常。
+ */
+function htmlElementListToArray(elementList){
+
+    // 参数校验
+    if(!isHtmlElementList(elementList)) {
+        let errMsg = `htmlElementListToArray 函数，接收的参数异常 elementList=${myToString(elementList)} 不是html元素集合对象( HTMLCollection 或者 NodeList)`;
+        throw new ParameterError(errMsg);
+    }
+
+    // 返回结果
+    return Array.from(elementList);
+}
+
+/**
  * 这里导出 这个模块的 所有内容
  */
 export {
@@ -200,6 +218,7 @@ export {
     copyObject, /* 复制一个对象 */
     mergeObject, /* 合并一个或者多个对象 */
     mergeObjectIgnoreCase, /* 合并一个或者多个对象，这里不区分键名的大小写。 */
+    htmlElementListToArray, /* 把html元素集合，转换为 数组 */
 
     // 两个常量
     TO_LOWERCASE,

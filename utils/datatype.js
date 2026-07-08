@@ -37,6 +37,7 @@ import {
     copyObject, /* 复制一个对象 */
     mergeObject, /* 合并一个或者多个对象 */
     mergeObjectIgnoreCase, /* 合并一个或者多个对象，这里不区分键名的大小写。 */
+    htmlElementListToArray, /* 将html元素集合，转为数组 */
     // 两个常量
     TO_LOWERCASE,
     TO_UPPERCASE
@@ -61,6 +62,7 @@ export {
     copyObject, /* 复制一个对象 */
     mergeObject, /* 合并一个或者多个对象 */
     mergeObjectIgnoreCase, /* 合并一个或者多个对象，这里不区分键名的大小写。 */
+    htmlElementListToArray, /* 将html元素集合，转为数组 */
     // 两个常量
     TO_LOWERCASE,
     TO_UPPERCASE

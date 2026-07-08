@@ -36,7 +36,8 @@ import {
 
 import {
     testToLowerCase, testToUpperCase, 
-    testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase
+    testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase,
+    testHtmlElementListToArray
 } from "./datatype/testTransform.js";
 
 // 测试 对外接口 DataUtil 是否可用
@@ -64,6 +65,7 @@ export {
     // == 
     testToLowerCase, testToUpperCase, 
     testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase,
+    testHtmlElementListToArray, 
     // == 
     testDataUtil
 }

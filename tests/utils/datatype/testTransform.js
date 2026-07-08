@@ -16,7 +16,8 @@
 // =============== 导入要测试的函数
 
 import {
-    objToMap, genMap, copyObject, mergeObject, mergeObjectIgnoreCase, TO_LOWERCASE, TO_UPPERCASE
+    objToMap, genMap, copyObject, mergeObject, mergeObjectIgnoreCase, TO_LOWERCASE, TO_UPPERCASE,
+    htmlElementListToArray
 } from "../../../utils/datatype/transform.js";
 
 // =============== 导入测试工具包
@@ -336,8 +337,78 @@ function testMergeObjectIgnoreCase(){
     Assert.objectEquals({A:1, B:2, C:3, D:true, E:Symbol.for('guid2')}, m2); // 统一转大写 key
 }
 
+function testHtmlElementListToArray(){
+    
+    // 定义一段 html 内容，用于测试 html 元素的正确性
+    let testHtmlString = `
+    <div id="test1" name="testDiv">这是一个测试的 DIV 标签</div>
+    <div id="test2" name="testDiv">这是一个测试的 DIV 标签 2</div>
+    <div id="test3" name="testDiv">这是一个测试的 DIV 标签 3</div>
+    <span id="test4" name="testSpan" >
+        <input id="test5" name="testInput" type="text" value="xxxxxx"/>
+    </span>
+    `;
+    // 用 domParser 创建一个 dom 对象 （这里的 DOMParser 是浏览器才有的。NodeJS 没有这东西 ）
+    let domParser = new DOMParser();
+    let htmlDocument = domParser.parseFromString(testHtmlString, 'text/html');
+
+    let htmlEl1 = htmlDocument.getElementById('test1');
+    let htmlEl2 = htmlDocument.querySelector('#test2');
+    let htmlList1 = htmlDocument.getElementsByName('testDiv');
+    let htmlList2 = htmlDocument.querySelectorAll('div[name="testDiv"]');
+    let emptyHtmlList = htmlDocument.querySelectorAll('button');
+
+    // 在我的框架中， js 的数据类型中主要有以下几种：
+    // ===> 空（undefined\null\NaN）、
+    // ===> 字符串（基础+对象）、数字（基础+对象）、布尔（基础+对象）、Symbol、类、函数、
+    // ===> 数组、Map、Set、
+    // ===> 正则、普通对象
+    
+    // 第一个参数测试
+    Assert.throwsErrors(()=>{ htmlElementListToArray(undefined); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(null); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(NaN); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(''); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray('sss'); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new String('')); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new String('sss')); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(123); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(-1); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Number(123)); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Number(-1)); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(true); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(false); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Boolean(true)); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Boolean(false)); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(Symbol.for('guid')); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(Error); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(Object); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(testHtmlElementListToArray); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(()=>{}); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(function(){}); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray([]); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray([1,2,3]); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray([[]]); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray([[1,2,3], [4,5,6]]); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Map()); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Map([['a', 1], ['b', 2]])); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Set()); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Set([1,2,3])); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(/123/); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new RegExp('123')); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray({}); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray({a:1, b:2}); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(new Object()); }, ParameterError);
+    Assert.throwsErrors(()=>{ htmlElementListToArray(htmlEl1); }, ParameterError); // element 不算，需要是element集合
+    Assert.throwsErrors(()=>{ htmlElementListToArray(htmlEl2); }, ParameterError); // element 不算，需要是element集合
+    Assert.throwsErrorsNone(()=>{ htmlElementListToArray(htmlList1); });
+    Assert.throwsErrorsNone(()=>{ htmlElementListToArray(htmlList2); });
+    Assert.throwsErrorsNone(()=>{ htmlElementListToArray(emptyHtmlList); }); // 空的element集合，也是集合
+}
+
 // =============== 导出测试函数，用于测试结果显示
 
 export {
-    testToLowerCase, testToUpperCase, testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase
+    testToLowerCase, testToUpperCase, testObjToMap, testGenMap, 
+    testCopyObject, testMergeObject, testMergeObjectIgnoreCase, testHtmlElementListToArray
 }
