@@ -8,6 +8,83 @@ As for the overall idea of the code, it comes from another project of my own: <h
 
 > For the UI components, I'm using the Bootstrap 5 style files here. I'll update the instructions after the integration is done.
 
+## 1.1 About data types
+
+In my framework, the classification of data may differ from standard JavaScript. Please refer to the following description for details:
+
+1. Empty (undefined, null, NaN): For these three data types, exceptions are likely to occur during program processing. So all are classified as empty. In standard Javascript, NaN is a numeric object.
+
+```js
+let a = undefined; let a2 = null; let a3 = NaN;
+```
+
+2. String: For string data, there are two possibilities, string value and string object.
+
+```js
+let s1 = '123'; let s2 = `123`; let s3 = new String('123');
+```
+
+3. Number: For numeric data, there are two possibilities, numeric value and numeric object.
+
+```js
+let n1 = 123; let n2 = new Number(123);
+```
+
+4. Boolean: For boolean data, there are two possibilities, boolean value and boolean object.
+
+```js
+let b1 = true; let b2 = false; let b3 = new Boolean(true); let b4 = new Boolean(false);
+```
+
+5. Regular Expression: For regular expression data, it only has one type that the regular expression object. It doesn't matter whether it is written in expression form or object form.
+
+```js
+let r1 = /123/; let r2 = new RegExp('123');
+```
+
+6. Symbol: It is a basic data type, not an object.
+
+```js
+let sy1 = Symbol("test1"); let sy2 = Symbol.for('test2');
+```
+
+7. Class: Classes in JavaScript are not independent like in other languages. In fact, they are functions. You can just use keyword `new` to create an object.
+
+```js
+class Test1 {}; let t1 = new Test1();
+```
+
+8. Function: According to standard JavaScript syntax, it has three types, named function, anonymous function, and arrow function.
+
+```js
+function testFunc1(){return 1+1}; let test2 = function(){return 1+1};  let test3 = ()=>{return 1+1};
+```
+
+9. Conventional collection object: In general, the commonly used collection objects are the following four types, Map, Set, one-dimensional array, two-dimensional array.
+
+```js
+// map
+let m1 = new Map(); let m2 = new Map([['a', 1], ['b', 2]]);
+// set
+let st1 = new Set(); let st2 = new Set([1,2,3]);
+// one-dimensional array
+let a1 = [1, 2, 3]; let a11 = [];
+// two-dimensional array
+let a2 = [[1,2,3], [4,5,6]]; let a22 = [[]];
+```
+
+10. Conventional object: In general, the commonly used objects are the following, object literals , objects created by custom classes and objects created by the Object class.
+
+```js
+// object literal
+let o1 = {}; let o2 = {a:1, b:2}; 
+// object created by Object class.
+let o3 = new Object();
+// obejct created by custom class.
+class MyTest {};
+let o4 = new MyTest();
+```
+
 # 2. Folder Structure
 
 Now, let me explain the meaning of each folder in this project. To minimize differences in usage caused by code organization, I designed an interface for each external module. You just need to call this interface file when using it.
