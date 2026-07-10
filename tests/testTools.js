@@ -52,8 +52,18 @@ function convertStringToHtmlNodes(htmlText){
  */
 function report(moduleInfo, ...funcs) {
 
+    console.log(new Date(), '===', `report === 开始测试 ${moduleInfo} ===`);
+
     // 首先，查找 id 是 result 的标签
     let resultDiv = document.getElementById('result');
+
+    // 如果页面没有 id 为 result 的 div 标签。则直接插入一个
+    if(resultDiv===undefined || resultDiv===null) {
+        // 插入一个 id 为 result 的标签
+        document.body.append(...convertStringToHtmlNodes('<div id="result" desc="inserted by function report."></div>'));
+        // 重新赋值
+        resultDiv = document.getElementById('result');
+    }
     
     // 构建一个 hr 标签
     resultDiv.append(...convertStringToHtmlNodes('<hr/>'));
@@ -89,6 +99,8 @@ function report(moduleInfo, ...funcs) {
             failArr.push(func.name);
         }finally{
             funcCount += 1;
+            // 增加一个关于执行的函数信息输出
+            console.log(new Date(), '===', `report === 执行了函数 ===> ${func.name?func.name:func.toString()}`);
         }
     });
 
