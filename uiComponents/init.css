@@ -1,0 +1,61 @@
+@charset "UTF-8";
+/**
+ * @description 这是一个项目内部的初始化 css 样式文件。它主要负责 通用的样式处理。这样具体页面 直接导入即可。
+ * @author Micheal Pang (Dongcan Pang)
+ * @since 2025 年 09 月 01 日
+ **/
+
+/* =============================================================== 导入 bootstrap 5 的样式 和 字体 */
+@import url('../thirdpartys/bootstrap5/bootstrap.css');
+@import url('../thirdpartys/bootstrap5/bootstrap-icons.css');
+
+/* ===================================  自定义的变量处理 ==================== */
+:root {
+    --pdc-primary-font-color: #424242; /*页面文字主颜色*/
+    --pdc-helper-font-color: #a5a5a5;  /*表单输入组件帮助信息的文字颜色*/
+}
+
+/* ===================================  自定义的通用样式处理 ==================== */
+
+/* 页面默认的文字颜色 修改 */
+body{
+    color: var(--pdc-primary-font-color);
+}
+
+/* 表单的帮助信息文字颜色 修改 */
+.form-text{
+    color: var(--pdc-helper-font-color);
+}
+
+/* tab 页 的标题文字颜色 修改 */
+.nav-link {
+    color: var(--pdc-primary-font-color);
+}
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+    color: var(--pdc-primary-font-color);
+}
+.nav-link:hover, .nav-link:focus {
+    color: #000;
+}
+
+/* 调整 h 的字体颜色 */
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
+    color: var(--pdc-primary-font-color);
+}
+
+/* 调整 modal 里面的字体颜色 */
+.modal-content {
+    color: var(--pdc-primary-font-color);
+}
+
+/* 顶一个让 子元素 分成3列的 样式 */
+.grid-columns-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* 修改表格的文字样式 */
+.table > :not(caption) > * > * {
+    color: var(--pdc-primary-font-color);
+}
