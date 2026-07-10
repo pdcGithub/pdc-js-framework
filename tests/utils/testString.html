@@ -17,11 +17,11 @@
     <!-- 这里是运行测试过程的代码 -->
     <script type="module">
     // 导入测试函数
-    import { testMyToString } from "./testString.js";
+    import { testMyToString, testMystdout } from "./testString.js";
     // 导入 report 函数
     import { report } from "../testTools.js";
     // 执行测试
-    report('utils/string.js', testMyToString);
+    report('utils/string.js', testMyToString, testMystdout);
     </script>
 </body>
 </html>

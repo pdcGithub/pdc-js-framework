@@ -52,7 +52,7 @@
 
         testValidUtil
     } from "./utils/testValid.js";
-    import { testMyToString } from "./utils/testString.js";
+    import { testMyToString, testMystdout } from "./utils/testString.js";
     import { testDomParser, testDrawTag } from "./utils/testHtml.js";
 
     // 导入 report 函数
@@ -90,7 +90,7 @@
                             testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList,
 
                             testValidUtil);
-    report('utils/string.js', testMyToString);
+    report('utils/string.js', testMyToString, testMystdout);
     report('utils/html.js', testDomParser, testDrawTag);
     </script>
 </body>

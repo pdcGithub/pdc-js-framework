@@ -129,6 +129,40 @@ function myToString(param) {
     return result;
 }
 
+/**
+ * 这是一个我自己的字符串输出标签。它一般出现在模板字面量前面。因为有些信息，比如：特殊类型、对象等等，不是直接 \`${param}\` 这方式能输出的。
+ * 所以，它内部的变量处理使用了 myToString 函数
+ * @example
+ * // 使用举例如下：
+ * let name = 'Jack';
+ * let all = mystdout`I am ${name}`;
+ * @param {Array<string>} literals 在整个模板字面量中，切割出来的字符串数组。
+ * @param  {...any} substitutions 在整个模板字面量中，切割出来的变量数组。
+ * @returns {string} 一个经过 myToString 整合处理的字符串信息。
+ */
+function mystdout(literals, ...substitutions){
+    
+    // 定一个返回结果
+    let result = '';
+
+    // 根据资料，这里建议按照 substitutions 长度来进行遍历。
+    // 因为 literals 是切割出来的字符串片段，substitutions 是变量数组。
+    // 对于变量结尾的字符串，会切割出 空字符元素，保证字符串吻合。literals 的长度会超出 substitutions 的长度。
+    for(let i=0;i<substitutions.length;i++){
+        // 切割出的字符片段，直接拼接
+        result += literals[i];
+        // 对于变量输出，最好是使用 myToString 。因为不是所有的内容都可以简单转字符串。
+        result += myToString(substitutions[i]);
+    }
+
+    // 合并最后一个 literals 字符片段
+    // 如果 substitutions 没有内容，则只会处理 字面量片段。
+    result += literals[literals.length-1];
+
+    // 返回
+    return result ;
+}
+
 export {
-    myToString
+    myToString, mystdout
 }
