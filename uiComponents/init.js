@@ -98,7 +98,7 @@ function documentReady(callback) {
 
 /**
  * 这是一个事件绑定的方法，可以对 html 的元素进行事件响应绑定。（对于 document 对象 和 document 的 body 对象，也是可以的）
- * @param {NodeList | HTMLCollection | Array<HtmlElement>} elements 只能为 document, document.body, HtmlElement, NodeList, HTMLCollection, Array&lt;HtmlElement&gt; 中的一个
+ * @param {Document | NodeList | HTMLCollection | Array<HtmlElement>} elements 只能为 document, document.body, HtmlElement, NodeList, HTMLCollection, Array&lt;HtmlElement&gt; 中的一个
  * @param {string} eventTypeString 事件类型字符串。如果有多个事件需要绑定，以逗号分隔。比如：'click, focus, keyup' 
  * @param {function} actionFunction 事件响应的回调函数，函数有一个 event 事件对象作为入参
  * @throws 如果参数检验异常，抛出 VerificationError 异常。如果内部校验用的函数异常，抛出 ParameterError 异常。
@@ -129,7 +129,7 @@ function actionBinding(elements, eventTypeString, actionFunction) {
 
     // 如果没有可绑定的对象，则不需要执行后续的处理。直接 抛异常 即可。
     let warningMsg1 = mystdout`函数 ${actionBinding.name} 没有找到可用于绑定的元素对象。请检查 elements=${elements}, eventTypeString=${eventTypeString}, actionFunction=${actionFunction}`;
-    throwError(elementArray.length<=0, warningMsg, VerificationError);
+    throwError(elementArray.length<=0, warningMsg1, VerificationError);
 
     // 开始校验 ============ eventTypeString 事件类型
     let tmpEventTypeStr = autoVnAofString(eventTypeString, false, {methodName:actionBinding.name, paramName:'eventTypeString'});
@@ -155,8 +155,11 @@ function actionBinding(elements, eventTypeString, actionFunction) {
 }
 
 /**
- * 这是一个事件绑定的方法，可以对 html 的元素进行事件响应绑定。这个方法有别于 actionBinding 。它直接提供 css 选择器的字符串就行了。不用传递 htmlElement 对象
- * @param {string} selector css 选择器的字符串
+ * 这是一个事件绑定的方法，可以对 html 的元素进行事件响应绑定。
+ * 这个方法有别于 actionBinding 。它直接提供 css 选择器的字符串就行了。不用传递 HtmlElement 对象。
+ * 但是，如果 selector 选不到可用的 HtmlElement 对象时，相当于 actionBinding 传入异常对象，会抛 VerificationError 异常。
+ * @param {string} selector css选择器的字符串。
+ * 如果 selector 选不到可用的 HtmlElement 对象时，相当于 actionBinding 传入异常对象，会抛 VerificationError 异常。
  * @param {string} eventTypeString 事件类型字符串。如果有多个事件需要绑定，以逗号分隔。比如：'click, focus, keyup' 
  * @param {function} actionFunction 事件响应的回调函数，函数有一个 event 事件对象作为入参
  * @throws 如果参数检验异常，抛出 VerificationError 异常。如果内部校验用的函数异常，抛出 ParameterError 异常。

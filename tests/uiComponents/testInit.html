@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这里是 init 模块的测试</title>
+    <!-- 导入 init 模块的 css 样式。它里面包含了 bootstrap 的样式引用 -->
+    <link rel="stylesheet" href="../../uiComponents/init.css" />
+</head>
+<body>
+    <script type="module">
+    
+    // 导入测试工具包
+    import { report } from "../testTools.js";
+
+    // 导入测试函数
+    import { 
+        testMyElecApi, testIsInApp, 
+        testErrorAlert, testUnhandledrejectionAlert, 
+        testDocumentReady, testActionBinding, testActionBindingBySelector
+    } from "./testInit.js";
+
+    // 执行测试
+    report('uiComponents/init.js', testMyElecApi, testIsInApp, 
+                                testErrorAlert, testUnhandledrejectionAlert, 
+                                testDocumentReady, testActionBinding, testActionBindingBySelector);
+    </script>
+</body>
+</html>
