@@ -55,6 +55,12 @@
     import { testMyToString, testMystdout } from "./utils/testString.js";
     import { testDomParser, testDrawTag } from "./utils/testHtml.js";
 
+    import {
+        testMyElecApi, testIsInApp, 
+        testErrorAlert, testUnhandledrejectionAlert, 
+        testDocumentReady, testActionBinding, testActionBindingBySelector
+    } from "./uiComponents/testInit.js";
+
     // 导入 report 函数
     import { report } from "./testTools.js";
 
@@ -92,6 +98,10 @@
                             testValidUtil);
     report('utils/string.js', testMyToString, testMystdout);
     report('utils/html.js', testDomParser, testDrawTag);
+
+    report('uiComponents/init.js', testMyElecApi, testIsInApp, 
+                                testErrorAlert, testUnhandledrejectionAlert, 
+                                testDocumentReady, testActionBinding, testActionBindingBySelector);
 
     // 打开 thirdparty 中 bootstrap5 的测试页面
     window.open('thirdpartys/bootstrap5/testBootstrap5.html', '_blank');
