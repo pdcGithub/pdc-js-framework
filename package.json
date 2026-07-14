@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "jsdoc models/ utils/ -d docs -r -t node_modules/docdash"
+    "docs": "jsdoc models/ utils/ uiComponents/ -d docs -r -t node_modules/docdash"
   },
   "keywords": [],
   "author": "Dongcan Pang (Michael Pang)",
