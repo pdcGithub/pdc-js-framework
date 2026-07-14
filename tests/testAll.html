@@ -61,6 +61,8 @@
         testDocumentReady, testActionBinding, testActionBindingBySelector
     } from "./uiComponents/testInit.js";
 
+    import { testEventName, testEventObject } from "./uiComponents/testEvents.js";
+
     // 导入 report 函数
     import { report } from "./testTools.js";
 
@@ -102,6 +104,8 @@
     report('uiComponents/init.js', testMyElecApi, testIsInApp, 
                                 testErrorAlert, testUnhandledrejectionAlert, 
                                 testDocumentReady, testActionBinding, testActionBindingBySelector);
+
+    report('uiComponents/events.js', testEventName, testEventObject);
 
     // 打开 thirdparty 中 bootstrap5 的测试页面
     window.open('thirdpartys/bootstrap5/testBootstrap5.html', 'bsTestWindow');
