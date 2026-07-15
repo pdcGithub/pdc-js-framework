@@ -39,6 +39,8 @@ const TO_LOWERCASE = 'LOWER';
  * @param {object} object 待处理对象
  * @param {boolean} canKeyBeEmpty 键信息，能否为空字符串。默认是 true
  * @param {boolean} canValueBeFunction 值信息，能否为函数。默认是 false
+ * @returns {Map<String, String|Function>} 一个 Map 对象
+ * @throws 如果参数异常，则抛出 ParameterError 异常。
  */
 function objToMap(object, canKeyBeEmpty=true, canValueBeFunction=false){
     // 参数校验
