@@ -23,7 +23,7 @@ const PDC_BEGIN = "pdc.begin";
 /**
  * 事件名：程序执行中
  */
-const PDC_RUNING = "pdc.running";
+const PDC_RUNNING = "pdc.running";
 
 /**
  * 事件名：程序执行结束
@@ -38,7 +38,7 @@ const EVENT_PDC_BEGIN = new Event(PDC_BEGIN, {bubbles:true, cancelable:true, com
 /**
  * 定义一个事件：程序执行中
  */
-const EVENT_PDC_RUNNING = new Event(PDC_RUNING, {bubbles:true, cancelable:true, composed:true});
+const EVENT_PDC_RUNNING = new Event(PDC_RUNNING, {bubbles:true, cancelable:true, composed:true});
 
 /**
  * 定义一个事件：程序执行完成
@@ -48,7 +48,7 @@ const EVENT_PDC_END = new Event(PDC_END, {bubbles:true, cancelable:true, compose
 // 导出
 export {
     // 事件名称
-    PDC_BEGIN, PDC_RUNING, PDC_END,
+    PDC_BEGIN, PDC_RUNNING, PDC_END,
     // 事件对象
     EVENT_PDC_BEGIN, EVENT_PDC_RUNNING, EVENT_PDC_END
 }

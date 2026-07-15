@@ -16,14 +16,14 @@
 import { DOM_PARSER } from "../../utils/html.js";
 import { Assert } from "../testTools.js";
 import {
-    PDC_BEGIN, PDC_RUNING, PDC_END, 
+    PDC_BEGIN, PDC_RUNNING, PDC_END, 
     EVENT_PDC_BEGIN, EVENT_PDC_RUNNING, EVENT_PDC_END 
 } from "../../uiComponents/events.js";
 
 function testEventName(){
     // 这里对事件名称的值进行测试
     Assert.equalsStrictly("pdc.begin", PDC_BEGIN);
-    Assert.equalsStrictly("pdc.running", PDC_RUNING);
+    Assert.equalsStrictly("pdc.running", PDC_RUNNING);
     Assert.equalsStrictly("pdc.end", PDC_END);
 }
 
@@ -32,7 +32,7 @@ function testEventObject(){
 
     // 在 document 监听 指定的事件
     document.addEventListener(PDC_BEGIN, event=>console.log(new Date(), event.type, event));
-    document.addEventListener(PDC_RUNING,event=>console.log(new Date(), event.type, event));
+    document.addEventListener(PDC_RUNNING,event=>console.log(new Date(), event.type, event));
     document.addEventListener(PDC_END, event=>console.log(new Date(), event.type, event));
 
     // 首先，增加3个按钮，在点击时，传播事件
