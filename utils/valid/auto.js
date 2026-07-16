@@ -16,7 +16,7 @@
 
 // 导入外部依赖 datatype 模块。
 import { copyObject, isBoolean, isEmptyString, isObjectLiteral, isString, valueOfBoolean, valueOfNumber, valueOfString } from "../datatype.js";
-import { myToString } from "../string.js";
+import { myToString, mystdout } from "../string.js";
 
 // 待测试函数
 import { 
@@ -219,7 +219,7 @@ function autoVnAofObjectLiteral(param, canBeUndefined=false, descInfoObj){
 function autoVnAofTargetObject(param, descInfoObj, ...targetType){
     
     // 先校验，如果抛出异常，后面是不会执行的。
-    validTargetObject(param, `${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是 targetType 所指定的类型中的一个`, ...targetType);
+    validTargetObject(param, mystdout`${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是 targetType=${targetType} 所指定的类型中的一个`, ...targetType);
     
     // 获取值
     return param;
@@ -236,7 +236,7 @@ function autoVnAofTargetObject(param, descInfoObj, ...targetType){
 function autoVnAofTargetObjectSet(param, descInfoObj, ...targetType){
     
     // 先校验，如果抛出异常，后面是不会执行的。
-    validTargetObjectSet(param, `${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是一个 Set, 并且 内部元素 是 targetType 所指定的类型中的一个`, ...targetType);
+    validTargetObjectSet(param, mystdout`${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是一个 Set, 并且 内部元素 是 targetType=${targetType} 所指定的类型中的一个`, ...targetType);
     
     // 获取值
     return param;
@@ -253,7 +253,7 @@ function autoVnAofTargetObjectSet(param, descInfoObj, ...targetType){
 function autoVnAofTargetObjectArray(param, descInfoObj, ...targetType){
     
     // 先校验，如果抛出异常，后面是不会执行的。
-    validTargetObjectArray(param, `${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是一个 Array, 并且 内部元素 是 targetType 所指定的类型中的一个`, ...targetType);
+    validTargetObjectArray(param, mystdout`${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是一个 Array, 并且 内部元素 是 targetType=${targetType} 所指定的类型中的一个`, ...targetType);
     
     // 获取值
     return param;
@@ -270,7 +270,7 @@ function autoVnAofTargetObjectArray(param, descInfoObj, ...targetType){
 function autoVnAofTargetObject2DArray(param, descInfoObj, ...targetType){
     
     // 先校验，如果抛出异常，后面是不会执行的。
-    validTargetObject2DArray(param, `${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是一个 二维数组, 并且 内部元素 是 targetType 所指定的类型中的一个`, ...targetType);
+    validTargetObject2DArray(param, mystdout`${handleDescInfoObj(descInfoObj)}=${myToString(param)} 参数异常, 它应该是一个 二维数组, 并且 内部元素 是 targetType=${targetType} 所指定的类型中的一个`, ...targetType);
     
     // 获取值
     return param;
