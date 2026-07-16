@@ -1,0 +1,41 @@
+// 在我的框架中， js 的数据类型中主要有以下几种：
+// ===> 空（undefined\null\NaN）、
+// ===> 字符串（基础+对象）、数字（基础+对象）、布尔（基础+对象）、Symbol、类、函数、
+// ===> 数组、Map、Set、
+// ===> 正则、普通对象
+
+undefined
+null
+NaN
+''
+'sss'
+new String('')
+new String('sss')
+123
+-1
+new Number(123)
+new Number(-1)
+true
+false
+new Boolean(true)
+new Boolean(false)
+Symbol('uid')
+Symbol.for('uid')
+Error
+Bootstrap5Object
+testBootstrap5ObjectCreate
+function(){}
+()=>{}
+[]
+[1,2,3]
+[[]]
+[[1,2,3],[4,5,6]]
+new Map()
+new Map([['a',1],['b', 2]])
+new Set()
+new Set([1,2,3])
+/123/
+new RegExp('123')
+{}
+{a:1, b:2}
+new Object()
