@@ -46,7 +46,7 @@ function testEventObject(){
     `;
     let newDoc = DOM_PARSER.parseFromString(htmlStr, 'text/html');
     // 插入页面
-    document.body.append(newDoc.getElementById('eventTest'));
+    document.getElementById('result').append(newDoc.getElementById('eventTest'));
     // 增加按钮点击处理
     document.getElementById('event1').addEventListener('click', event=>{ document.dispatchEvent(EVENT_PDC_BEGIN); });
     document.getElementById('event2').addEventListener('click', event=>{ document.dispatchEvent(EVENT_PDC_RUNNING); });

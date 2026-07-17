@@ -28,8 +28,8 @@ import { VerificationError } from "../../models/errors.js";
 
 documentReady(()=>{
     // 插入一个信息到页面上，然后用测试函数读取
-    let myDoc = DOM_PARSER.parseFromString('<myhide id="testReady" class="d-none">测试</myhide>', 'text/html');
-    document.body.append(myDoc.getElementById('testReady'));
+    let myDoc = DOM_PARSER.parseFromString('<myhide id="testReady">这行，测试 document ready</myhide>', 'text/html');
+    document.getElementById('result').append(myDoc.getElementById('testReady'));
     console.log(new String(), document.readyState);
 });
 
@@ -65,7 +65,7 @@ function testErrorAlert(){
     </div>
     `;
     let myDoc = DOM_PARSER.parseFromString(testHtml, 'text/html');
-    document.body.append(myDoc.getElementById('testErrorAlert'));
+    document.getElementById('result').append(myDoc.getElementById('testErrorAlert'));
     let myTestBtn = document.getElementById('btnTestErrorAlert');
     myTestBtn.addEventListener('click', ()=>{
         // 这里 b 是没有定义的。会抛一个异常
@@ -83,7 +83,7 @@ function testUnhandledrejectionAlert(){
     </div>
     `;
     let myDoc = DOM_PARSER.parseFromString(testHtml, 'text/html');
-    document.body.append(myDoc.getElementById('testUnhandledrejectionAlert'));
+    document.getElementById('result').append(myDoc.getElementById('testUnhandledrejectionAlert'));
     let myTestBtn = document.getElementById('btnTestUnhandledrejectionAlert');
     myTestBtn.addEventListener('click', ()=>{
         // 这里直接 promise reject
@@ -94,7 +94,7 @@ function testUnhandledrejectionAlert(){
 function testDocumentReady() {
     // 这里比对插入信息是否一致
     let content = document.getElementById('testReady').getHTML();
-    Assert.equalsStrictly('测试', content);
+    Assert.equalsStrictly('这行，测试 document ready', content);
 }
 
 function testActionBinding() {

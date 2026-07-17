@@ -64,6 +64,13 @@
     import { testEventName, testEventObject } from "./uiComponents/testEvents.js";
     import { testConstants, testMyRandNumStr } from "./uiComponents/testUitools.js";
 
+    import {
+        testBootstrap5ObjectCreate, testBootstrap5ObjectAble, testBootstrap5ObjectGet, testBootstrap5ObjectAdd,
+        testBootstrap5ObjectRemove, testBootstrap5ObjectHas, testBootstrap5ObjectClear, testBootstrap5ObjectTo,
+        testBootstrap5ObjectProteced,
+        testStaticModule
+    } from "./uiComponents/testStatic.js";
+
     // 导入 report 函数
     import { report } from "./testTools.js";
 
@@ -108,6 +115,11 @@
 
     report('uiComponents/events.js', testEventName, testEventObject);
     report('uiComponents/uitools.js', testConstants, testMyRandNumStr);
+
+    report('uiComponents/static.js', testBootstrap5ObjectCreate, testBootstrap5ObjectAble, testBootstrap5ObjectGet, testBootstrap5ObjectAdd,
+                                    testBootstrap5ObjectRemove, testBootstrap5ObjectHas, testBootstrap5ObjectClear, testBootstrap5ObjectTo,
+                                    testBootstrap5ObjectProteced,
+                                    testStaticModule);
 
     // 打开 thirdparty 中 bootstrap5 的测试页面
     window.open('thirdpartys/bootstrap5/testBootstrap5.html', 'bsTestWindow');
