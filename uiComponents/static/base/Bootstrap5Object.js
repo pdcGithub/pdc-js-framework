@@ -64,8 +64,12 @@ class Bootstrap5Object {
             tagName, false, {className:Bootstrap5Object.name, methodName:'constructor', paramName:'tagName'});
         vu.autoVnAofObjectLiteral(
             initAttributes, false, {className:Bootstrap5Object.name, methodName:'constructor', paramName:'initAttributes'});
-        vu.autoVnAofTargetObjectArray(
+        // 这里对于空数组，应该增加一个兼容处理。因为数组为空，是可以的。
+        // 如果不是空数组，才校验
+        if(!Array.isArray(initContent) || initContent.length>0){
+            vu.autoVnAofTargetObjectArray(
             initContent, {className:Bootstrap5Object.name, methodName:'constructor', paramName:'initContent'}, String, Bootstrap5Object);
+        }
         
         // 开始赋值（这里要注意，传入的 attribute 是对象，但是存储是 map。而 css class 信息，使用 Set 存储）
         // 对于这些集合的读写，本类内部有对应的方法。一般是 get、add 等等开头
@@ -85,7 +89,8 @@ class Bootstrap5Object {
         }
 
         // 使用统一的api 初始化 innerHtml 内容
-        this.addContentElements(...initContent);
+        // 如果有内容才处理，否则不处理
+        if(Array.isArray(initContent) && initContent.length>0) this.addContentElements(...initContent);
     }
 
     /**
@@ -117,7 +122,7 @@ class Bootstrap5Object {
      * @returns 标签名 字符串。
      */
     getTagNameString() {
-        return du.valueOfString(this.#tagName);
+        return du.valueOfString(this.#tagName).toLowerCase();
     }
 
     /**
@@ -264,7 +269,7 @@ class Bootstrap5Object {
 
     /**
      * 给本标签对象 删除一个 css 样式 类信息。
-     * @param {string} className css 样式 类信息，可以为空字符串。如果匹配不到，不会执行删除。
+     * @param {string} inClassName css 样式 类信息，可以为空字符串。如果匹配不到，不会执行删除。
      * @throws 如果参数异常会抛出 VerificationError 
      */
     removeCssClass(inClassName) {
