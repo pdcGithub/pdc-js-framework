@@ -150,11 +150,22 @@ function testDrawTag() {
         Assert.equalsStrictly('<div a="1"></div>', drawTag('div', {a:1}));
         Assert.equalsStrictly('<div name="222"></div>', drawTag('div', 'name="222"'));
         Assert.equalsStrictly('<div a="1" b="2">xxx</div>', drawTag('div', {a:1, b:2}, 'xxx'));
-        // 没有结束标签的标签 "meta", "link", "br", "hr"
-        Assert.equalsStrictly('<meta/>', drawTag('meta'));
-        Assert.equalsStrictly('<link/>', drawTag('link'));
-        Assert.equalsStrictly('<br/>', drawTag('br'));
-        Assert.equalsStrictly('<hr/>', drawTag('hr'));
+        // 没有结束标签的标签 "meta", "link", "br", "hr" .... 
+        // 随便测试，有没有统一转小写的处理。因为 html 标签名 和 属性名 是不区分大小写的。
+        Assert.equalsStrictly('<area/>', drawTag("AREA"));
+        Assert.equalsStrictly('<base/>', drawTag("BASE"));
+        Assert.equalsStrictly('<br/>', drawTag("BR"));
+        Assert.equalsStrictly('<col/>', drawTag("COL"));
+        Assert.equalsStrictly('<embed/>', drawTag("EMBED"));
+        Assert.equalsStrictly('<hr/>', drawTag("HR"));
+        Assert.equalsStrictly('<img/>', drawTag("IMG"));
+        Assert.equalsStrictly('<input/>', drawTag("INPUT"));
+        Assert.equalsStrictly('<link/>', drawTag("LINK"));
+        Assert.equalsStrictly('<meta/>', drawTag("META"));
+        Assert.equalsStrictly('<param/>', drawTag("PARAM"));
+        Assert.equalsStrictly('<source/>', drawTag("SOURCE"));
+        Assert.equalsStrictly('<track/>', drawTag("TRACK"));
+        Assert.equalsStrictly('<wbr/>', drawTag("WBR"));
     });
 }
 
