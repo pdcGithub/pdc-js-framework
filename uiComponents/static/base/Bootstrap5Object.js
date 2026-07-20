@@ -367,8 +367,8 @@ class Bootstrap5Object {
     }
     
     /**
-     * 将这个 Bootstrap5Object 转换为 html dom 中的 标签对象
-     * @returns {Array<object>} html 的 标签对象数组
+     * 将这个 Bootstrap5Object 转换为 HTML DOM 树的一个 Node 数组。
+     * @returns {Array<Node>} 转换为 HTML DOM 树的一个 Node 数组
      */
     toHtmlDomObject(){
         // 先通过 domParser 转为 dom 对象
