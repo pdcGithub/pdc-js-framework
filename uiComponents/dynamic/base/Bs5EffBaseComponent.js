@@ -7,6 +7,7 @@
  * Copyright © 2025 Micheal Pang. All rights reserved.
  * 
  * @file This file "Bs5EffBaseComponent.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
+ * @module uiComponents/dynamic/base/Bs5EffBaseComponent
  * @author Micheal Pang (Dongcan Pang)
  * @since 2025-08-25
  * @description 这是关于 Bootstrap 5 的 UI 动态组件库的基础类。它跟静态基础类不一样，静态基础类是一次性绘制，而动态组件是动态修改页面的信息。
@@ -25,7 +26,7 @@ import * as vu from "../../../utils/valid.js";
  */
 const PROTECTED_GET_MYID = Symbol.for('bs5_eff_protected_get_myId');
 /**
- * 受保护的方法：setMyId。用于设置动态组件的 ID 信息。 #myId;
+ * 受保护的方法：setMyId。用于设置动态组件的 ID 信息。 #myId; 这个关系到组件构建，所以一般不要随便调用 SET 方法。
  */
 const PROTECTED_SET_MYID = Symbol.for('bs5_eff_protected_set_myId');
 /**
@@ -33,7 +34,7 @@ const PROTECTED_SET_MYID = Symbol.for('bs5_eff_protected_set_myId');
  */
 const PROTECTED_GET_MYCSSCLASS = Symbol.for('bs5_eff_protected_get_myCssClass');
 /**
- * 受保护的方法：setMyCssClass。用于设置动态组件的 css class 样式信息。 #myCssClass;
+ * 受保护的方法：setMyCssClass。用于设置动态组件的 css class 样式信息。 #myCssClass; 这个关系到组件构建，所以一般不要随便调用 SET 方法。
  */
 const PROTECTED_SET_MYCSSCLASS = Symbol.for('bs5_eff_protected_set_myCssClass');
 /**
@@ -41,7 +42,7 @@ const PROTECTED_SET_MYCSSCLASS = Symbol.for('bs5_eff_protected_set_myCssClass');
  */
 const PROTECTED_GET_MYSUBCONFIG = Symbol.for('bs5_eff_projected_get_mySubConfig');
 /**
- * 受保护的方法：setMySubConfig。用于设置动态组件的 二级配置对象。#mySubConfig;
+ * 受保护的方法：setMySubConfig。用于设置动态组件的 二级配置对象。#mySubConfig; 这个关系到组件构建，所以一般不要随便调用 SET 方法。
  */
 const PROTECTED_SET_MYSUBCONFIG = Symbol.for('bs5_eff_projected_set_mySubConfig');
 /**
@@ -49,7 +50,7 @@ const PROTECTED_SET_MYSUBCONFIG = Symbol.for('bs5_eff_projected_set_mySubConfig'
  */
 const PROTECTED_GET_BOOTSTRAPOBJECT = Symbol.for('bs5_eff_protected_get_bootstrapobject');
 /**
- * 受保护的方法：setBootstrapObject。用于设置动态组件的 静态UI对象。#bootstrapObject;
+ * 受保护的方法：setBootstrapObject。用于设置动态组件的 静态UI对象。#bootstrapObject; 这个关系到组件构建，所以一般不要随便调用 SET 方法。
  */
 const PROTECTED_SET_BOOTSTRAPOBJECT = Symbol.for('bs5_eff_protected_set_bootstrapobject');
 
@@ -62,25 +63,26 @@ const PROTECTED_SET_BOOTSTRAPOBJECT = Symbol.for('bs5_eff_protected_set_bootstra
 class Bs5EffBaseComponent {
 
     /**
-     * 私有属性，组件ID，用于定位组件
+     * 私有属性，组件ID，用于定位组件。类型：字符串
      */
     #myId;
     /**
-     * 私有属性，组件样式，用于渲染
+     * 私有属性，组件样式，用于渲染。类型：字符串
      */
     #myCssClass;
     /**
-     * 私有属性，组件的二级配置对象，用于其它处理
+     * 私有属性，组件的二级配置对象，用于其它处理。类型：对象字面量
      */
     #mySubConfig; 
     /**
-     * 私有属性，组件的内置静态 UI 组件对象。
+     * 私有属性，组件的内置静态 UI 组件对象。类型：Bootstrap5Object
      */
     #bootstrapObject;
 
     /**
-     * Bs5EffBaseComponent 的构造函数。主要用于初始化 #myId、#myCssClass、#mySubConfig、#bootstrapObject 这些内置对象
-     * @param {string} id 组件ID，用于定位组件。如果不填，默认会生成一个随机ID
+     * Bs5EffBaseComponent 的构造函数。主要用于初始化 #myId、#myCssClass、#mySubConfig、#bootstrapObject 这些内置对象。
+     * 在默认的情况下，内置的 #bootstrapObject 会初始化为一个 div 标签 ui 静态对象。
+     * @param {string} id 组件ID，用于定位组件。如果不填，默认会生成一个随机ID。规则是：'Bs5EffBaseComponent' + 数字
      * @param {string} cssClass 组件样式，用于渲染。默认为 空字符串
      * @param {object} subconfig 组件的二级配置对象，用于其它扩展的处理。默认为空对象字面量 {}
      */
@@ -98,40 +100,77 @@ class Bs5EffBaseComponent {
 
     // ====================== 关于私有属性的 getter 和 setter 处理
 
+    /**
+     * 获取 内置的 #myId 信息。
+     * @returns {string} 内置的 #myId 信息。
+     */
     [PROTECTED_GET_MYID](){
         return this.#myId;
     }
-
+    /**
+     * 获取 内置的 #myCssClass 信息。
+     * @returns {string} 内置的 #myCssClass 信息。
+     */
     [PROTECTED_GET_MYCSSCLASS](){
         return this.#myCssClass;
     }
-
+    /**
+     * 获取 内置的 #mySubConfig 对象。
+     * @returns {ObjectLiteral} 内置的 #myCssClass 对象。
+     */
     [PROTECTED_GET_MYSUBCONFIG](){
         return this.#mySubConfig;
     }
-
+    /**
+     * 获取 内置的 #bootstrapObject 对象。
+     * @returns {Bootstrap5Object} 内置的 #bootstrapObject 对象。
+     */
     [PROTECTED_GET_BOOTSTRAPOBJECT](){
         return this.#bootstrapObject;
     }
 
+    /**
+     * 这里是 设置 内置的 #myId 信息。这个ID关系到组件搜索，所以一般不要随便调用 SET 方法。
+     * @param {string} id 参数必须是非空字符串。
+     * @throws 如果参数校验不通过，抛出 VerificationError
+     */
     [PROTECTED_SET_MYID](id){
         // 设置
         this.#myId = vu.autoVnAofString(
             id, false, {className:Bs5EffBaseComponent.name, methodName:'PROTECTED_SET_MYID', paramName:'id'});
+        // 一般来说,ID 在 constructor 构造函数中，已经赋值 给内置对象了。
+        // 这里修改了 id，所以要通知内置 Bootstrap5Object ，修改id信息。
+        this.#bootstrapObject.addAttribute('id', this.#myId);
     }
-
+    /**
+     * 这里是 设置 内置的 #myCssClass 信息。这个css 关系到组件整体样式，所以一般不要随便调用 SET 方法。
+     * @param {string} cssClass 参数必须是字符串，但是可以为空字符串。
+     * @throws 如果参数校验不通过，抛出 VerificationError
+     */
     [PROTECTED_SET_MYCSSCLASS](cssClass){
         // 设置
         this.#myCssClass = vu.autoVnAofString(
             cssClass, true, {className:Bs5EffBaseComponent.name, methodName:'PROTECTED_SET_MYCSSCLASS', paramName:'cssClass'});
+        // 一般来说,css 在 constructor 构造函数中，已经赋值 给内置对象了。
+        // 这里修改了 css class 信息，所以要通知内置 Bootstrap5Object ，修改 css class 信息。
+        this.#bootstrapObject.clearCssClasses();
+        this.#bootstrapObject.addCssClass(this.#myCssClass);
     }
-
+    /**
+     * 这里是 设置 内置的 #mySubConfig 信息。这个 subconfig 关系到组件构建，所以一般不要随便调用 SET 方法。
+     * @param {ObjectLiteral} subconfig 参数必须是对象字面量。也就是 {} 写法，或者 Object 对象。
+     * @throws 如果参数校验不通过，抛出 VerificationError
+     */
     [PROTECTED_SET_MYSUBCONFIG](subconfig){
         // 设置
         this.#mySubConfig = vu.autoVnAofObjectLiteral(
             subconfig, false, {className:Bs5EffBaseComponent.name, methodName:'PROTECTED_SET_MYSUBCONFIG', paramName:'subconfig'});
     }
-
+    /**
+     * 这里是 设置 内置的 #bootstrapObject 信息。这个 Bootstrap5Object 关系到组件构建，所以一般不要随便调用 SET 方法。
+     * @param {Bootstrap5Object} object 参数必须是 Bootstrap5Object 类或者子类的对象。
+     * @throws 如果参数校验不通过，抛出 VerificationError
+     */
     [PROTECTED_SET_BOOTSTRAPOBJECT](object){
         // 设置
         this.#bootstrapObject = vu.autoVnAofTargetObject(
@@ -150,8 +189,8 @@ class Bs5EffBaseComponent {
     }
 
     /**
-     * 获取这个组件的 html dom 对象数组。
-     * @returns {Array<object>} 组件的 html dom 对象数组。
+     * 获取这个组件的 HTML DOM 树的一个 Node 数组
+     * @returns {Array<Node>} 组件的 HTML DOM 树的一个 Node 数组
      */
     getHtmlDomObjectArray(){
         return this.#bootstrapObject.toHtmlDomObject();
