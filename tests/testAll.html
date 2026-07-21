@@ -71,6 +71,12 @@
         testStaticModule
     } from "./uiComponents/testStatic.js";
 
+    import {
+        testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
+        testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
+        testBs5EffModule
+    } from "./uiComponents/testDynamic.js";
+
     // 导入 report 函数
     import { report } from "./testTools.js";
 
@@ -120,6 +126,10 @@
                                     testBootstrap5ObjectRemove, testBootstrap5ObjectHas, testBootstrap5ObjectClear, testBootstrap5ObjectTo,
                                     testBootstrap5ObjectProteced,
                                     testStaticModule);
+
+    report('uiComponents/dynamic.js', testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
+                                    testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
+                                    testBs5EffModule);
 
     // 打开 thirdparty 中 bootstrap5 的测试页面
     window.open('thirdpartys/bootstrap5/testBootstrap5.html', 'bsTestWindow');
