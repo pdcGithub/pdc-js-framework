@@ -77,6 +77,11 @@
         testBs5EffModule
     } from "./uiComponents/testDynamic.js";
 
+    import {
+        testIsContentObject, testIsContentObjectArray, testIsContentObjectSet, testIsContentObject2DArray,
+        testIsChildrenComponent, testIsChildrenComponentArray, testIsChildrenComponent2DArray
+    } from "./uiComponents/testUidatatype.js";
+
     // 导入 report 函数
     import { report } from "./testTools.js";
 
@@ -130,6 +135,8 @@
     report('uiComponents/dynamic.js', testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
                                     testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
                                     testBs5EffModule);
+    report('uiComponents/uidatatype.js', testIsContentObject, testIsContentObjectArray, testIsContentObjectSet, testIsContentObject2DArray,
+                                        testIsChildrenComponent, testIsChildrenComponentArray, testIsChildrenComponent2DArray);
 
     // 打开 thirdparty 中 bootstrap5 的测试页面
     window.open('thirdpartys/bootstrap5/testBootstrap5.html', 'bsTestWindow');
