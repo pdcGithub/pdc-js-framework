@@ -9,7 +9,7 @@
  * @file This file "testBs5EffBaseComponent.js" is part of project "pdc-js-framework" , which is belong to Michael Pang (It's Me).
  * @author Micheal Pang (Dongcan Pang)
  * @since 2026-07-20
- * @description 这里是 UI Components 静态组件的 base/Bs5EffBaseComponent 模块测试
+ * @description 这里是 UI Components 动态组件的 base/Bs5EffBaseComponent 模块测试
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
