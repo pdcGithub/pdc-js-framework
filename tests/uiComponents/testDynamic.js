@@ -18,7 +18,8 @@ import { Assert } from "../testTools.js";
 import {
     Bs5EffBaseComponent, 
     PROTECTED_GET_MYID, PROTECTED_GET_MYCSSCLASS, PROTECTED_GET_MYSUBCONFIG, PROTECTED_GET_BOOTSTRAPOBJECT,
-    PROTECTED_SET_MYID, PROTECTED_SET_MYCSSCLASS, PROTECTED_SET_MYSUBCONFIG, PROTECTED_SET_BOOTSTRAPOBJECT
+    PROTECTED_SET_MYID, PROTECTED_SET_MYCSSCLASS, PROTECTED_SET_MYSUBCONFIG, PROTECTED_SET_BOOTSTRAPOBJECT,
+    Bs5EffLoading
 } from "../../uiComponents/dynamic.js";
 
 // ========== 导入测试函数
@@ -26,6 +27,9 @@ import {
     testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
     testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble
 } from "./dynamic/base/testBs5EffBaseComponent.js";
+import {
+    testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide
+} from "./dynamic/others/testBs5EffLoading.js";
 
 /**
  * 再增加一个测试 dynamic 模块能否正常调用的测试
@@ -40,5 +44,8 @@ function testBs5EffModule(){
 export{
     testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
     testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
+
+    testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide,
+    
     testBs5EffModule
 }

@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>整个框架的测试页面</title>
+    <!-- 因为有些 UI 组件需要测试，所以增加 css 样式。否则，样式效果是显示不出来的 -->
+    <link href="../uiComponents/init.css" rel="stylesheet"/>
+    <!-- 这里再修改一下 hr 的处理。默认的样式，间隔太多了 -->
+    <style>
+    hr{
+        margin: 3px 0;
+    }
+    body{
+        padding: 8px;
+    }
+    </style>
 </head>
 <body>
     <!-- 
@@ -75,6 +86,7 @@
     import {
         testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
         testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
+        testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide, 
         testBs5EffModule
     } from "./uiComponents/testDynamic.js";
 
@@ -136,6 +148,7 @@
 
     report('uiComponents/dynamic.js', testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
                                     testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
+                                    testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide,
                                     testBs5EffModule);
     report('uiComponents/uidatatype.js', testIsContentObject, testIsContentObjectArray, testIsContentObjectSet, testIsContentObject2DArray,
                                         testIsChildrenComponent, testIsChildrenComponentArray, testIsChildrenComponent2DArray);
