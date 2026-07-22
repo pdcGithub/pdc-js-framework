@@ -20,7 +20,10 @@ import { isRegexpOk } from "../../utils/datatype.js";
 
 // ========== 导入测试对象
 
-import { BTN_GROUP_SIZE, BTN_SIZE, BTN_COR, myRandNumStr } from "../../uiComponents/uitools.js";
+import { 
+    BTN_GROUP_SIZE, BTN_SIZE, BTN_COR, myRandNumStr,
+    LOADING_TYPE
+} from "../../uiComponents/uitools.js";
 
 // ========== 开始测试
 
@@ -43,6 +46,9 @@ function testConstants() {
     Assert.equalsStrictly('light', BTN_COR.light);
     Assert.equalsStrictly('dark', BTN_COR.dark);
     Assert.equalsStrictly('link', BTN_COR.link);
+    //
+    Assert.equalsStrictly('border', LOADING_TYPE.border);
+    Assert.equalsStrictly('grow', LOADING_TYPE.grow);
 }
 
 function testMyRandNumStr(){

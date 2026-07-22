@@ -23,6 +23,8 @@ import {
     testBootstrap5ObjectProteced
 } from "./static/base/testBootstrap5Object.js";
 
+import { testBs5LoadingLayerConstructor } from "./static/others/testBs5LoadingLayer.js";
+
 /**
  * 再增加一个测试 static 模块能否正常调用的测试
  */
@@ -37,6 +39,8 @@ export {
     testBootstrap5ObjectCreate, testBootstrap5ObjectAble, testBootstrap5ObjectGet, testBootstrap5ObjectAdd,
     testBootstrap5ObjectRemove, testBootstrap5ObjectHas, testBootstrap5ObjectClear, testBootstrap5ObjectTo,
     testBootstrap5ObjectProteced,
+
+    testBs5LoadingLayerConstructor,
     
     testStaticModule
 }

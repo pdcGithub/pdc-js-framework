@@ -18,7 +18,11 @@
 // ========= 导入子模块的内容
 import { PROTECTED_GET_CONTENT, Bootstrap5Object } from "./static/base/Bootstrap5Object.js";
 
+import { Bs5LoadingLayer } from "./static/others/Bs5LoadingLayer.js";
+
 // ========= 导出
 export{
-    PROTECTED_GET_CONTENT, Bootstrap5Object
+    PROTECTED_GET_CONTENT, Bootstrap5Object,
+
+    Bs5LoadingLayer
 }

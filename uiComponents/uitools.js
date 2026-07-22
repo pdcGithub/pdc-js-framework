@@ -63,6 +63,20 @@ const BTN_COR = {
 }
 
 /**
+ * 常量：加载动画，类型字符串
+ */
+const LOADING_TYPE = {
+    /**
+     * 圆环
+     */
+    border: 'border',
+    /**
+     * 闪烁的圆点
+     */
+    grow: 'grow'
+}
+
+/**
  * 这是一个ui组件内部使用的随机函数。它可以随机出数字字符串。至于字符串的长度，大约是7-8位。
  * 如果未来有更精确的需要，可以开发其它随机函数。
  * @returns {string} 一个随机的数字字符串（大约是8位）
@@ -75,5 +89,5 @@ function myRandNumStr(){
  * 导出公用内容
  */
 export{
-    BTN_GROUP_SIZE, BTN_SIZE, BTN_COR, myRandNumStr
+    BTN_GROUP_SIZE, BTN_SIZE, BTN_COR, LOADING_TYPE, myRandNumStr
 }
