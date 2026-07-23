@@ -95,6 +95,8 @@
         testIsChildrenComponent, testIsChildrenComponentArray, testIsChildrenComponent2DArray
     } from "./uiComponents/testUidatatype.js";
 
+    import { testLoadConstants, testLoadInitMethod } from "./uiComponents/testLoad.js";
+
     // 导入 report 函数
     import { report } from "./testTools.js";
 
@@ -152,6 +154,8 @@
                                     testBs5EffModule);
     report('uiComponents/uidatatype.js', testIsContentObject, testIsContentObjectArray, testIsContentObjectSet, testIsContentObject2DArray,
                                         testIsChildrenComponent, testIsChildrenComponentArray, testIsChildrenComponent2DArray);
+
+    report('uiComponents/load.js', testLoadConstants, testLoadInitMethod);
 
     // 打开 thirdparty 中 bootstrap5 的测试页面
     window.open('thirdpartys/bootstrap5/testBootstrap5.html', 'bsTestWindow');
