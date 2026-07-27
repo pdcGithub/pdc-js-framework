@@ -31,7 +31,9 @@ import {
 import {
     testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
     testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
-    testIsHtmlElement, testIsHtmlElementList
+    testIsHtmlElement, testIsHtmlElementList,
+    testIsArray, testIsEmptyArray, testIs2DArray, testIsEmpty2DArray,
+    testIsSet, testIsEmptySet, testIsMap, testIsEmptyMap
 } from "./datatype/testObject.js";
 
 import {
@@ -48,6 +50,8 @@ function testDataUtil() {
     Assert.equalsStrictly(true, typeof du.isNullValue === 'function');
     Assert.equalsStrictly(true, typeof du.isFunction === 'function');
     Assert.equalsStrictly(true, typeof du.mergeObjectIgnoreCase === 'function');
+    //
+    Assert.equalsStrictly(true, typeof du.isArray==='function');
 }
 
 // 把这些测试函数，导出给 外部调用
@@ -62,6 +66,8 @@ export {
     testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
     testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
     testIsHtmlElement, testIsHtmlElementList,
+    testIsArray, testIsEmptyArray, testIs2DArray, testIsEmpty2DArray,
+    testIsSet, testIsEmptySet, testIsMap, testIsEmptyMap,
     // == 
     testToLowerCase, testToUpperCase, 
     testObjToMap, testGenMap, testCopyObject, testMergeObject, testMergeObjectIgnoreCase,

@@ -286,6 +286,99 @@ function isHtmlElementList(elementList) {
     return result;
 }
 
+//==============================  这里处理 容器对象  ================
+
+/**
+ * 判断 传入的参数 是不是一个 数组
+ * @param {*} pObject 待判断参数
+ * @returns 如果是数组，则返回 true；否则，返回 false
+ */
+function isArray(pObject){
+    // 使用 Array 类的 isArray 方法处理。
+    return Array.isArray(pObject);
+}
+
+/**
+ * 判断 传入的参数 是不是一个 空的数组
+ * @param {*} pObject 待判断参数
+ * @returns 如果是数组而且长度为0，则返回 true；否则，返回 false
+ */
+function isEmptyArray(pObject){
+    // 空数组处理。首先是数组，然后长度为0
+    return isArray(pObject) && pObject.length<=0;
+}
+
+/**
+ * 判断 传入的参数 是不是一个 二维数组
+ * @param {*} pObject 待判断参数
+ * @returns 如果是二维数组，则返回 true；否则，返回 false
+ */
+function is2DArray(pObject){
+    // 二维数组，首先是数组，然后子元素 也是数组
+    if(isArray(pObject)){
+        // 记录原始元素长度
+        let oriLength = pObject.length;
+        // 计算为数组的元素长度
+        let arrLength = pObject.filter(value=>isArray(value)).length;
+        // 如果所有元素都是数组，那么它是二维数组。否则不是
+        // 这里有个特例，如果传入的是一维数组，那么内容为空，长度是 0===0 .需要处理下
+        return oriLength===0?false:oriLength===arrLength;
+    }else{
+        // 不是数组就不用判断了
+        return false;
+    }
+}
+
+/**
+ * 判断 传入的参数 是不是一个 空的二维数组
+ * @param {*} pObject 待判断参数
+ * @returns 如果是二维数组，而且第一个元素数组长度为0，则返回 true；否则，返回 false
+ */
+function isEmpty2DArray(pObject){
+    // 空数组处理。首先是2D数组，然后长度为0
+    return is2DArray(pObject) && pObject[0].length<=0;
+}
+
+/**
+ * 判断 传入的参数 是不是一个 Set 对象
+ * @param {*} pObject 待判断参数
+ * @returns 如果是Set对象，则返回 true；否则，返回 false
+ */
+function isSet(pObject){
+    // 对于 Set 对象，需要用 instanceof 处理
+    return pObject instanceof Set ;
+}
+
+/**
+ * 判断 传入的参数 是不是一个 空的Set
+ * @param {*} pObject 待判断参数
+ * @returns 如果是Set对象而且长度为0，则返回 true；否则，返回 false
+ */
+function isEmptySet(pObject){
+    // 首先是 Set 对象；然后，元素长度为 0
+    return isSet(pObject) && pObject.size<=0;
+}
+
+/**
+ * 判断 传入的参数 是不是一个 Map 对象
+ * @param {*} pObject 待判断参数
+ * @returns 如果是Map对象，则返回 true；否则，返回 false
+ */
+function isMap(pObject){
+    // 对于 Map 对象，需要用 instanceof 处理
+    return pObject instanceof Map ;
+}
+
+/**
+ * 判断 传入的参数 是不是一个 空的 Map
+ * @param {*} pObject 待判断参数
+ * @returns 如果是Map对象而且长度为0，则返回 true；否则，返回 false
+ */
+function isEmptyMap(pObject){
+    // 首先是 Map 对象；然后，元素长度为 0
+    return isMap(pObject) && pObject.size<=0;
+}
+
 /**
  * 这里导出 这个模块的 所有内容
  */
@@ -293,5 +386,8 @@ export {
     isFunction, isClass, isTargetClass, isObject,  /* 基础对象 和 类 判断 */
     isObjectLiteral, /* 对象字面量判断 */
     isTargetObject, isTargetObjectSet, isTargetObjectArray, isTargetObject2DArray,  /* 目标对象和数组判断 */
-    isHtmlElement, isHtmlElementList                             /* Html元素对象和数组判断 */
+    isHtmlElement, isHtmlElementList,                             /* Html元素对象和数组判断 */
+
+    // 关于容器的判断
+    isArray, isEmptyArray, is2DArray, isEmpty2DArray, isSet, isEmptySet, isMap, isEmptyMap
 }

@@ -19,14 +19,18 @@
     import { 
         testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
         testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
-        testIsHtmlElement, testIsHtmlElementList
+        testIsHtmlElement, testIsHtmlElementList,
+        testIsArray, testIsEmptyArray, testIs2DArray, testIsEmpty2DArray,
+        testIsSet, testIsEmptySet, testIsMap, testIsEmptyMap
     } from "./testObject.js";
     // 导入 report 函数
     import { report } from "../../testTools.js";
     // 执行测试
     report('utils/datatype/object.js', testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
                                     testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
-                                    testIsHtmlElement, testIsHtmlElementList);
+                                    testIsHtmlElement, testIsHtmlElementList,
+                                    testIsArray, testIsEmptyArray, testIs2DArray, testIsEmpty2DArray,
+                                    testIsSet, testIsEmptySet, testIsMap, testIsEmptyMap);
     </script>
 </body>
 </html>

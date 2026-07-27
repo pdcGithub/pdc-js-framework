@@ -28,7 +28,9 @@ import {
     isFunction, isClass, isTargetClass, isObject,  /* 基础对象 和 类 判断 */
     isObjectLiteral, /* 对象字面量判断 */
     isTargetObject, isTargetObjectSet, isTargetObjectArray, isTargetObject2DArray,  /* 目标对象和数组判断 */
-    isHtmlElement, isHtmlElementList                             /* Html元素对象和数组判断 */
+    isHtmlElement, isHtmlElementList,                             /* Html元素对象和数组判断 */
+    // 关于容器的判断
+    isArray, isEmptyArray, is2DArray, isEmpty2DArray, isSet, isEmptySet, isMap, isEmptyMap
 } from "./datatype/object.js";
 
 import { 
@@ -56,6 +58,8 @@ export {
     isObjectLiteral, /* 对象字面量判断 */
     isTargetObject, isTargetObjectSet, isTargetObjectArray, isTargetObject2DArray,  /* 目标对象和数组判断 */
     isHtmlElement, isHtmlElementList,                             /* Html元素对象和数组判断 */
+    // 关于容器的判断
+    isArray, isEmptyArray, is2DArray, isEmpty2DArray, isSet, isEmptySet, isMap, isEmptyMap,
 
     objToMap, /* 将对象转 Map */
     genMap,   /* 快速生成一个 Map */

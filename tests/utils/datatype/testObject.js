@@ -19,7 +19,10 @@ import {
     isFunction, isClass, isTargetClass, isObject,  /* 基础对象 和 类 判断 */
     isObjectLiteral, /* 对象字面量判断 */
     isTargetObject, isTargetObjectSet, isTargetObjectArray, isTargetObject2DArray,  /* 目标对象和数组判断 */
-    isHtmlElement, isHtmlElementList                             /* Html元素对象和数组判断 */
+    isHtmlElement, isHtmlElementList,                             /* Html元素对象和数组判断 */
+    
+    isArray, isEmptyArray, is2DArray, isEmpty2DArray, isSet, isEmptySet, isMap, isEmptyMap
+
 } from "../../../utils/datatype/object.js";
 
 // =============== 导入测试工具包
@@ -934,10 +937,332 @@ function testIsHtmlElementList(){
     Assert.equalsStrictly(true, isHtmlElementList(notExists));
 }
 
+function testIsArray(){
+    // 参数测试
+    Assert.equalsStrictly(false, isArray(undefined));
+    Assert.equalsStrictly(false, isArray(null));
+    Assert.equalsStrictly(false, isArray(NaN));
+    Assert.equalsStrictly(false, isArray(''));
+    Assert.equalsStrictly(false, isArray('sss'));
+    Assert.equalsStrictly(false, isArray(new String('')));
+    Assert.equalsStrictly(false, isArray(new String('sss')));
+    Assert.equalsStrictly(false, isArray(123));
+    Assert.equalsStrictly(false, isArray(-1));
+    Assert.equalsStrictly(false, isArray(new Number(123)));
+    Assert.equalsStrictly(false, isArray(new Number(-1)));
+    Assert.equalsStrictly(false, isArray(true));
+    Assert.equalsStrictly(false, isArray(false));
+    Assert.equalsStrictly(false, isArray(new Boolean(true)));
+    Assert.equalsStrictly(false, isArray(new Boolean(false)));
+    Assert.equalsStrictly(false, isArray(Symbol('uid')));
+    Assert.equalsStrictly(false, isArray(Symbol.for('uid')));
+    Assert.equalsStrictly(false, isArray(Error));
+    Assert.equalsStrictly(false, isArray(ObjectLiteral));
+    Assert.equalsStrictly(false, isArray(testIsArray));
+    Assert.equalsStrictly(false, isArray(function(){}));
+    Assert.equalsStrictly(false, isArray(()=>{}));
+    Assert.equalsStrictly(true, isArray([]));
+    Assert.equalsStrictly(true, isArray([1,2,3]));
+    Assert.equalsStrictly(true, isArray([[]]));
+    Assert.equalsStrictly(true, isArray([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(true, isArray([[1,2,3],[4,5,6], true, 123]));
+    Assert.equalsStrictly(false, isArray(new Map()));
+    Assert.equalsStrictly(false, isArray(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(false, isArray(new Set()));
+    Assert.equalsStrictly(false, isArray(new Set([1,2,3])));
+    Assert.equalsStrictly(false, isArray(/123/));
+    Assert.equalsStrictly(false, isArray(new RegExp('123')));
+    Assert.equalsStrictly(false, isArray({}));
+    Assert.equalsStrictly(false, isArray({a:1, b:2}));
+    Assert.equalsStrictly(false, isArray(new Object()));
+}
+
+function testIsEmptyArray(){
+    // 参数测试
+    Assert.equalsStrictly(false, isEmptyArray(undefined));
+    Assert.equalsStrictly(false, isEmptyArray(null));
+    Assert.equalsStrictly(false, isEmptyArray(NaN));
+    Assert.equalsStrictly(false, isEmptyArray(''));
+    Assert.equalsStrictly(false, isEmptyArray('sss'));
+    Assert.equalsStrictly(false, isEmptyArray(new String('')));
+    Assert.equalsStrictly(false, isEmptyArray(new String('sss')));
+    Assert.equalsStrictly(false, isEmptyArray(123));
+    Assert.equalsStrictly(false, isEmptyArray(-1));
+    Assert.equalsStrictly(false, isEmptyArray(new Number(123)));
+    Assert.equalsStrictly(false, isEmptyArray(new Number(-1)));
+    Assert.equalsStrictly(false, isEmptyArray(true));
+    Assert.equalsStrictly(false, isEmptyArray(false));
+    Assert.equalsStrictly(false, isEmptyArray(new Boolean(true)));
+    Assert.equalsStrictly(false, isEmptyArray(new Boolean(false)));
+    Assert.equalsStrictly(false, isEmptyArray(Symbol('uid')));
+    Assert.equalsStrictly(false, isEmptyArray(Symbol.for('uid')));
+    Assert.equalsStrictly(false, isEmptyArray(Error));
+    Assert.equalsStrictly(false, isEmptyArray(ObjectLiteral));
+    Assert.equalsStrictly(false, isEmptyArray(testIsArray));
+    Assert.equalsStrictly(false, isEmptyArray(function(){}));
+    Assert.equalsStrictly(false, isEmptyArray(()=>{}));
+    Assert.equalsStrictly(true, isEmptyArray([]));
+    Assert.equalsStrictly(false, isEmptyArray([1,2,3]));
+    Assert.equalsStrictly(false, isEmptyArray([[]]));
+    Assert.equalsStrictly(false, isEmptyArray([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(false, isEmptyArray(new Map()));
+    Assert.equalsStrictly(false, isEmptyArray(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(false, isEmptyArray(new Set()));
+    Assert.equalsStrictly(false, isEmptyArray(new Set([1,2,3])));
+    Assert.equalsStrictly(false, isEmptyArray(/123/));
+    Assert.equalsStrictly(false, isEmptyArray(new RegExp('123')));
+    Assert.equalsStrictly(false, isEmptyArray({}));
+    Assert.equalsStrictly(false, isEmptyArray({a:1, b:2}));
+    Assert.equalsStrictly(false, isEmptyArray(new Object()));
+}
+
+function testIs2DArray(){
+    // 参数测试
+    Assert.equalsStrictly(false, is2DArray(undefined));
+    Assert.equalsStrictly(false, is2DArray(null));
+    Assert.equalsStrictly(false, is2DArray(NaN));
+    Assert.equalsStrictly(false, is2DArray(''));
+    Assert.equalsStrictly(false, is2DArray('sss'));
+    Assert.equalsStrictly(false, is2DArray(new String('')));
+    Assert.equalsStrictly(false, is2DArray(new String('sss')));
+    Assert.equalsStrictly(false, is2DArray(123));
+    Assert.equalsStrictly(false, is2DArray(-1));
+    Assert.equalsStrictly(false, is2DArray(new Number(123)));
+    Assert.equalsStrictly(false, is2DArray(new Number(-1)));
+    Assert.equalsStrictly(false, is2DArray(true));
+    Assert.equalsStrictly(false, is2DArray(false));
+    Assert.equalsStrictly(false, is2DArray(new Boolean(true)));
+    Assert.equalsStrictly(false, is2DArray(new Boolean(false)));
+    Assert.equalsStrictly(false, is2DArray(Symbol('uid')));
+    Assert.equalsStrictly(false, is2DArray(Symbol.for('uid')));
+    Assert.equalsStrictly(false, is2DArray(Error));
+    Assert.equalsStrictly(false, is2DArray(ObjectLiteral));
+    Assert.equalsStrictly(false, is2DArray(testIsArray));
+    Assert.equalsStrictly(false, is2DArray(function(){}));
+    Assert.equalsStrictly(false, is2DArray(()=>{}));
+    Assert.equalsStrictly(false, is2DArray([]));
+    Assert.equalsStrictly(false, is2DArray([1,2,3]));
+    Assert.equalsStrictly(true, is2DArray([[]]));
+    Assert.equalsStrictly(true, is2DArray([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(false, is2DArray([[1,2,3],[4,5,6], true, 123]));
+    Assert.equalsStrictly(false, is2DArray(new Map()));
+    Assert.equalsStrictly(false, is2DArray(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(false, is2DArray(new Set()));
+    Assert.equalsStrictly(false, is2DArray(new Set([1,2,3])));
+    Assert.equalsStrictly(false, is2DArray(/123/));
+    Assert.equalsStrictly(false, is2DArray(new RegExp('123')));
+    Assert.equalsStrictly(false, is2DArray({}));
+    Assert.equalsStrictly(false, is2DArray({a:1, b:2}));
+    Assert.equalsStrictly(false, is2DArray(new Object()));
+}
+
+function testIsEmpty2DArray(){
+    // 参数测试
+    Assert.equalsStrictly(false, isEmpty2DArray(undefined));
+    Assert.equalsStrictly(false, isEmpty2DArray(null));
+    Assert.equalsStrictly(false, isEmpty2DArray(NaN));
+    Assert.equalsStrictly(false, isEmpty2DArray(''));
+    Assert.equalsStrictly(false, isEmpty2DArray('sss'));
+    Assert.equalsStrictly(false, isEmpty2DArray(new String('')));
+    Assert.equalsStrictly(false, isEmpty2DArray(new String('sss')));
+    Assert.equalsStrictly(false, isEmpty2DArray(123));
+    Assert.equalsStrictly(false, isEmpty2DArray(-1));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Number(123)));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Number(-1)));
+    Assert.equalsStrictly(false, isEmpty2DArray(true));
+    Assert.equalsStrictly(false, isEmpty2DArray(false));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Boolean(true)));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Boolean(false)));
+    Assert.equalsStrictly(false, isEmpty2DArray(Symbol('uid')));
+    Assert.equalsStrictly(false, isEmpty2DArray(Symbol.for('uid')));
+    Assert.equalsStrictly(false, isEmpty2DArray(Error));
+    Assert.equalsStrictly(false, isEmpty2DArray(ObjectLiteral));
+    Assert.equalsStrictly(false, isEmpty2DArray(testIsArray));
+    Assert.equalsStrictly(false, isEmpty2DArray(function(){}));
+    Assert.equalsStrictly(false, isEmpty2DArray(()=>{}));
+    Assert.equalsStrictly(false, isEmpty2DArray([]));
+    Assert.equalsStrictly(false, isEmpty2DArray([1,2,3]));
+    Assert.equalsStrictly(true, isEmpty2DArray([[]]));
+    Assert.equalsStrictly(false, isEmpty2DArray([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(false, isEmpty2DArray([[1,2,3],[4,5,6], true, 123]));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Map()));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Set()));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Set([1,2,3])));
+    Assert.equalsStrictly(false, isEmpty2DArray(/123/));
+    Assert.equalsStrictly(false, isEmpty2DArray(new RegExp('123')));
+    Assert.equalsStrictly(false, isEmpty2DArray({}));
+    Assert.equalsStrictly(false, isEmpty2DArray({a:1, b:2}));
+    Assert.equalsStrictly(false, isEmpty2DArray(new Object()));
+}
+
+function testIsSet(){
+    // 参数测试
+    Assert.equalsStrictly(false, isSet(undefined));
+    Assert.equalsStrictly(false, isSet(null));
+    Assert.equalsStrictly(false, isSet(NaN));
+    Assert.equalsStrictly(false, isSet(''));
+    Assert.equalsStrictly(false, isSet('sss'));
+    Assert.equalsStrictly(false, isSet(new String('')));
+    Assert.equalsStrictly(false, isSet(new String('sss')));
+    Assert.equalsStrictly(false, isSet(123));
+    Assert.equalsStrictly(false, isSet(-1));
+    Assert.equalsStrictly(false, isSet(new Number(123)));
+    Assert.equalsStrictly(false, isSet(new Number(-1)));
+    Assert.equalsStrictly(false, isSet(true));
+    Assert.equalsStrictly(false, isSet(false));
+    Assert.equalsStrictly(false, isSet(new Boolean(true)));
+    Assert.equalsStrictly(false, isSet(new Boolean(false)));
+    Assert.equalsStrictly(false, isSet(Symbol('uid')));
+    Assert.equalsStrictly(false, isSet(Symbol.for('uid')));
+    Assert.equalsStrictly(false, isSet(Error));
+    Assert.equalsStrictly(false, isSet(ObjectLiteral));
+    Assert.equalsStrictly(false, isSet(testIsArray));
+    Assert.equalsStrictly(false, isSet(function(){}));
+    Assert.equalsStrictly(false, isSet(()=>{}));
+    Assert.equalsStrictly(false, isSet([]));
+    Assert.equalsStrictly(false, isSet([1,2,3]));
+    Assert.equalsStrictly(false, isSet([[]]));
+    Assert.equalsStrictly(false, isSet([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(false, isSet([[1,2,3],[4,5,6], true, 123]));
+    Assert.equalsStrictly(false, isSet(new Map()));
+    Assert.equalsStrictly(false, isSet(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(true, isSet(new Set()));
+    Assert.equalsStrictly(true, isSet(new Set([1,2,3])));
+    Assert.equalsStrictly(false, isSet(/123/));
+    Assert.equalsStrictly(false, isSet(new RegExp('123')));
+    Assert.equalsStrictly(false, isSet({}));
+    Assert.equalsStrictly(false, isSet({a:1, b:2}));
+    Assert.equalsStrictly(false, isSet(new Object()));
+}
+
+function testIsEmptySet(){
+    // 参数测试
+    Assert.equalsStrictly(false, isEmptySet(undefined));
+    Assert.equalsStrictly(false, isEmptySet(null));
+    Assert.equalsStrictly(false, isEmptySet(NaN));
+    Assert.equalsStrictly(false, isEmptySet(''));
+    Assert.equalsStrictly(false, isEmptySet('sss'));
+    Assert.equalsStrictly(false, isEmptySet(new String('')));
+    Assert.equalsStrictly(false, isEmptySet(new String('sss')));
+    Assert.equalsStrictly(false, isEmptySet(123));
+    Assert.equalsStrictly(false, isEmptySet(-1));
+    Assert.equalsStrictly(false, isEmptySet(new Number(123)));
+    Assert.equalsStrictly(false, isEmptySet(new Number(-1)));
+    Assert.equalsStrictly(false, isEmptySet(true));
+    Assert.equalsStrictly(false, isEmptySet(false));
+    Assert.equalsStrictly(false, isEmptySet(new Boolean(true)));
+    Assert.equalsStrictly(false, isEmptySet(new Boolean(false)));
+    Assert.equalsStrictly(false, isEmptySet(Symbol('uid')));
+    Assert.equalsStrictly(false, isEmptySet(Symbol.for('uid')));
+    Assert.equalsStrictly(false, isEmptySet(Error));
+    Assert.equalsStrictly(false, isEmptySet(ObjectLiteral));
+    Assert.equalsStrictly(false, isEmptySet(testIsArray));
+    Assert.equalsStrictly(false, isEmptySet(function(){}));
+    Assert.equalsStrictly(false, isEmptySet(()=>{}));
+    Assert.equalsStrictly(false, isEmptySet([]));
+    Assert.equalsStrictly(false, isEmptySet([1,2,3]));
+    Assert.equalsStrictly(false, isEmptySet([[]]));
+    Assert.equalsStrictly(false, isEmptySet([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(false, isEmptySet([[1,2,3],[4,5,6], true, 123]));
+    Assert.equalsStrictly(false, isEmptySet(new Map()));
+    Assert.equalsStrictly(false, isEmptySet(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(true, isEmptySet(new Set()));
+    Assert.equalsStrictly(false, isEmptySet(new Set([1,2,3])));
+    Assert.equalsStrictly(false, isEmptySet(/123/));
+    Assert.equalsStrictly(false, isEmptySet(new RegExp('123')));
+    Assert.equalsStrictly(false, isEmptySet({}));
+    Assert.equalsStrictly(false, isEmptySet({a:1, b:2}));
+    Assert.equalsStrictly(false, isEmptySet(new Object()));
+}
+
+function testIsMap(){
+    // 参数测试
+    Assert.equalsStrictly(false, isMap(undefined));
+    Assert.equalsStrictly(false, isMap(null));
+    Assert.equalsStrictly(false, isMap(NaN));
+    Assert.equalsStrictly(false, isMap(''));
+    Assert.equalsStrictly(false, isMap('sss'));
+    Assert.equalsStrictly(false, isMap(new String('')));
+    Assert.equalsStrictly(false, isMap(new String('sss')));
+    Assert.equalsStrictly(false, isMap(123));
+    Assert.equalsStrictly(false, isMap(-1));
+    Assert.equalsStrictly(false, isMap(new Number(123)));
+    Assert.equalsStrictly(false, isMap(new Number(-1)));
+    Assert.equalsStrictly(false, isMap(true));
+    Assert.equalsStrictly(false, isMap(false));
+    Assert.equalsStrictly(false, isMap(new Boolean(true)));
+    Assert.equalsStrictly(false, isMap(new Boolean(false)));
+    Assert.equalsStrictly(false, isMap(Symbol('uid')));
+    Assert.equalsStrictly(false, isMap(Symbol.for('uid')));
+    Assert.equalsStrictly(false, isMap(Error));
+    Assert.equalsStrictly(false, isMap(ObjectLiteral));
+    Assert.equalsStrictly(false, isMap(testIsArray));
+    Assert.equalsStrictly(false, isMap(function(){}));
+    Assert.equalsStrictly(false, isMap(()=>{}));
+    Assert.equalsStrictly(false, isMap([]));
+    Assert.equalsStrictly(false, isMap([1,2,3]));
+    Assert.equalsStrictly(false, isMap([[]]));
+    Assert.equalsStrictly(false, isMap([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(false, isMap([[1,2,3],[4,5,6], true, 123]));
+    Assert.equalsStrictly(true, isMap(new Map()));
+    Assert.equalsStrictly(true, isMap(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(false, isMap(new Set()));
+    Assert.equalsStrictly(false, isMap(new Set([1,2,3])));
+    Assert.equalsStrictly(false, isMap(/123/));
+    Assert.equalsStrictly(false, isMap(new RegExp('123')));
+    Assert.equalsStrictly(false, isMap({}));
+    Assert.equalsStrictly(false, isMap({a:1, b:2}));
+    Assert.equalsStrictly(false, isMap(new Object()));
+}
+
+function testIsEmptyMap(){
+    // 参数测试
+    Assert.equalsStrictly(false, isEmptyMap(undefined));
+    Assert.equalsStrictly(false, isEmptyMap(null));
+    Assert.equalsStrictly(false, isEmptyMap(NaN));
+    Assert.equalsStrictly(false, isEmptyMap(''));
+    Assert.equalsStrictly(false, isEmptyMap('sss'));
+    Assert.equalsStrictly(false, isEmptyMap(new String('')));
+    Assert.equalsStrictly(false, isEmptyMap(new String('sss')));
+    Assert.equalsStrictly(false, isEmptyMap(123));
+    Assert.equalsStrictly(false, isEmptyMap(-1));
+    Assert.equalsStrictly(false, isEmptyMap(new Number(123)));
+    Assert.equalsStrictly(false, isEmptyMap(new Number(-1)));
+    Assert.equalsStrictly(false, isEmptyMap(true));
+    Assert.equalsStrictly(false, isEmptyMap(false));
+    Assert.equalsStrictly(false, isEmptyMap(new Boolean(true)));
+    Assert.equalsStrictly(false, isEmptyMap(new Boolean(false)));
+    Assert.equalsStrictly(false, isEmptyMap(Symbol('uid')));
+    Assert.equalsStrictly(false, isEmptyMap(Symbol.for('uid')));
+    Assert.equalsStrictly(false, isEmptyMap(Error));
+    Assert.equalsStrictly(false, isEmptyMap(ObjectLiteral));
+    Assert.equalsStrictly(false, isEmptyMap(testIsArray));
+    Assert.equalsStrictly(false, isEmptyMap(function(){}));
+    Assert.equalsStrictly(false, isEmptyMap(()=>{}));
+    Assert.equalsStrictly(false, isEmptyMap([]));
+    Assert.equalsStrictly(false, isEmptyMap([1,2,3]));
+    Assert.equalsStrictly(false, isEmptyMap([[]]));
+    Assert.equalsStrictly(false, isEmptyMap([[1,2,3],[4,5,6]]));
+    Assert.equalsStrictly(false, isEmptyMap([[1,2,3],[4,5,6], true, 123]));
+    Assert.equalsStrictly(true, isEmptyMap(new Map()));
+    Assert.equalsStrictly(false, isEmptyMap(new Map([['a',1],['b', 2]])));
+    Assert.equalsStrictly(false, isEmptyMap(new Set()));
+    Assert.equalsStrictly(false, isEmptyMap(new Set([1,2,3])));
+    Assert.equalsStrictly(false, isEmptyMap(/123/));
+    Assert.equalsStrictly(false, isEmptyMap(new RegExp('123')));
+    Assert.equalsStrictly(false, isEmptyMap({}));
+    Assert.equalsStrictly(false, isEmptyMap({a:1, b:2}));
+    Assert.equalsStrictly(false, isEmptyMap(new Object()));
+}
+
 // =============== 导出测试函数，用于测试结果显示
 
 export {
     testIsFunction, testIsClass, testIsTargetClass, testIsObject, testIsObjectLiteral,
     testIsTargetObject, testIsTargetObjectSet, testIsTargetObjectArray, testIsTargetObject2DArray,
-    testIsHtmlElement, testIsHtmlElementList
+    testIsHtmlElement, testIsHtmlElementList,
+
+    testIsArray, testIsEmptyArray, testIs2DArray, testIsEmpty2DArray,
+    testIsSet, testIsEmptySet, testIsMap, testIsEmptyMap
 }
