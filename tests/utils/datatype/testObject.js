@@ -1043,6 +1043,8 @@ function testIs2DArray(){
     Assert.equalsStrictly(false, is2DArray([]));
     Assert.equalsStrictly(false, is2DArray([1,2,3]));
     Assert.equalsStrictly(true, is2DArray([[]]));
+    Assert.equalsStrictly(true, is2DArray([[], [4,5,6]]));
+    Assert.equalsStrictly(false, is2DArray([ , [4,5,6]]));
     Assert.equalsStrictly(true, is2DArray([[1,2,3],[4,5,6]]));
     Assert.equalsStrictly(false, is2DArray([[1,2,3],[4,5,6], true, 123]));
     Assert.equalsStrictly(false, is2DArray(new Map()));
@@ -1083,6 +1085,8 @@ function testIsEmpty2DArray(){
     Assert.equalsStrictly(false, isEmpty2DArray([]));
     Assert.equalsStrictly(false, isEmpty2DArray([1,2,3]));
     Assert.equalsStrictly(true, isEmpty2DArray([[]]));
+    Assert.equalsStrictly(false, isEmpty2DArray([[], [4,5,6]]));
+    Assert.equalsStrictly(false, isEmpty2DArray([ , [4,5,6]]));
     Assert.equalsStrictly(false, isEmpty2DArray([[1,2,3],[4,5,6]]));
     Assert.equalsStrictly(false, isEmpty2DArray([[1,2,3],[4,5,6], true, 123]));
     Assert.equalsStrictly(false, isEmpty2DArray(new Map()));

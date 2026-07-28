@@ -322,7 +322,7 @@ function is2DArray(pObject){
         let arrLength = pObject.filter(value=>isArray(value)).length;
         // 如果所有元素都是数组，那么它是二维数组。否则不是
         // 这里有个特例，如果传入的是一维数组，那么内容为空，长度是 0===0 .需要处理下
-        return oriLength===0?false:oriLength===arrLength;
+        return oriLength<=0?false:oriLength===arrLength;
     }else{
         // 不是数组就不用判断了
         return false;
@@ -332,11 +332,13 @@ function is2DArray(pObject){
 /**
  * 判断 传入的参数 是不是一个 空的二维数组
  * @param {*} pObject 待判断参数
- * @returns 如果是二维数组，而且第一个元素数组长度为0，则返回 true；否则，返回 false
+ * @returns 如果是二维数组，且只有一个内部元素；然后这个元素数组长度为0，则返回 true；否则，返回 false
  */
 function isEmpty2DArray(pObject){
-    // 空数组处理。首先是2D数组，然后长度为0
-    return is2DArray(pObject) && pObject[0].length<=0;
+    // 对于空的二维数组，不能只判断第一个元素长度。存在一种情况，二维数组第一个元素是空数组，但后续元素非空数组。
+    // 所以要限制整个二维数组的长度，只能有一个元素。
+    // 最后再判断仅有的一个元素，内部的长度。
+    return is2DArray(pObject) && pObject.length===1 && pObject[0].length<=0;
 }
 
 /**
