@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这里测试的是 utils/valid/options.js 模块的程序</title>
+</head>
+<body>
+    <script type="module">
+
+    // 导入测试函数
+    import {
+        testOptionsConstant, testOptionsParamErr, 
+        testOptionsNull, testOptionsString, testOptionsNumber, testOptionsBoolean, testOptionsSymbol,
+        testOptionsFunc, testOptionsCls, testOptionsArray, testOptionsArray2d, testOptionsSet,
+        testOptionsMap, testOptionsRegExp, testOptionsObjectLiteral, testOptionsObject, testOptionsHtmlElem,
+        testOptionsHtmlElemList, testOptionsTargetObject, testOptionsTargetObjectSet, testOptionsTargetObjectArr, testOptionsTargetObjectArr2d,
+        testOptionsValueChecking
+    } from "./testOptions.js";
+
+    // 导入 report 函数
+    import { report } from "../../testTools.js";
+
+    // 执行测试
+    report('utils/valid/options.js',  testOptionsConstant, testOptionsParamErr, 
+                                    testOptionsNull, testOptionsString, testOptionsNumber, testOptionsBoolean, testOptionsSymbol,
+                                    testOptionsFunc, testOptionsCls, testOptionsArray, testOptionsArray2d, testOptionsSet,
+                                    testOptionsMap, testOptionsRegExp, testOptionsObjectLiteral, testOptionsObject, testOptionsHtmlElem,
+                                    testOptionsHtmlElemList, testOptionsTargetObject, testOptionsTargetObjectSet, testOptionsTargetObjectArr, testOptionsTargetObjectArr2d,
+                                    testOptionsValueChecking
+                                );
+
+    </script>
+</body>
+</html>
