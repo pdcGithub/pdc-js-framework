@@ -14,7 +14,7 @@
  */
 "use strict"; // 这是严格模式下的 Javascript 代码
 
-import { VerificationError } from "../../models/errors.js";
+import { ParameterError, VerificationError } from "../../models/errors.js";
 import { 
     isArray, isBoolean, isNullValue, isString, isEmptyString, 
     valueOfBoolean, valueOfString, valueOfNumber, isSymbol, 
@@ -126,7 +126,7 @@ const VDATA_TYPE = {
  * 根据传入的数据类型字符串，判断待处理的参数，是否符合类型要求。
  * @param {*} pValue 待处理参数
  * @param {string} inType 数据类型字符串。非空字符串。参考：VDATA_TYPE 常量。如果不在指定的字符串范围内，会抛 ParameterError 异常。默认：VDATA_TYPE.string
- * @param {string} inErrorInfo 非空字符串。如果不符合数据类型要求，则抛出这个字符信息。默认：'测试'
+ * @param {string} inErrorInfo 校验异常时，需要抛出的异常信息字符串。默认：'测试'。非空字符串
  * @param {boolean} inCanBeEmpty 数据是否可以为空。对于字符串，指空字符串。对于数组、Set、Map，指是否可以为空数组、空Set、空Map。默认：false
  * @param {Array<Class>} inTargetTypeArr 如果是 target 开头的数据类型，可以指定一个类型数组，用于判断内部数据是否与数组内部信息符合。默认：[]
  * @throws 对于抛出异常有2种：
@@ -263,16 +263,145 @@ function validSingleType(pValue, inType=VDATA_TYPE.string, inErrorInfo='测试',
     return re;
 }
 
-function validTypes(pValue, inType=[VDATA_TYPE.string], inErrorInfo='测试', inCanBeEmpty=false, inTargetTypeArr=[]){
+/**
+ * 根据传入的数据类型字符串，判断待处理的参数，是否符合类型要求。
+ * 
+ * 注意：这里跟 validSingleType 有一点点不一样。这里的 inType 可以是 `VDATA_TYPE` 字符串，也可以是数组形式。
+ * 因为有些参数，它可以为几种数据类型。这时候，只要有一个数据类型描述符合，就可以通过校验。所以，用数组来编写指定的数据类型信息。
+ * @param {*} pValue 待处理参数
+ * @param {string|Array<string>} inType 数据类型字符串 或者 数据类型字符串数组。参考：`VDATA_TYPE` 常量。如果不在指定的字符串范围内，会抛 ParameterError 异常。默认：`[VDATA_TYPE.string]` 数组
+ * @param {string} inErrorInfo 校验异常时，需要抛出的异常信息字符串。默认：'测试'。非空字符串
+ * @param {boolean} inCanBeEmpty 数据是否可以为空。对于字符串，指空字符串。对于数组、Set、Map，指是否可以为空数组、空Set、空Map。默认：false
+ * @param {Array<Class>} inTargetTypeArr 如果是 target 开头的数据类型，可以指定一个类型数组，用于判断内部数据是否与数组内部信息符合。默认：[]
+ * @throws 对于抛出异常有2种：
+ * 第一种，是 ParameterError 这个函数、依赖函数等等，本身的参数异常导致抛出；第二种，是 VerificationError 业务上的校验异常。
+ * @returns 如果是 string, boolean, number类型，则返回对应的值；如果是其它，则返回参数本身。
+ */
+function validMultiTypes(pValue, inType=[VDATA_TYPE.string], inErrorInfo='测试', inCanBeEmpty=false, inTargetTypeArr=[]){
+
+    // ===================== 首先，进行参数校验。如果不通过抛 ParameterError 
+    
+    // 获取合规的 VDATA_TYPE 信息数组（因为多出用到，所以前提处理下）
+    let vDataTypeValues = Object.values(VDATA_TYPE);
+
+    // inType 
+    if(isString(inType)){
+        // 校验类型字符串
+        throwParameterError(
+            !vDataTypeValues.includes(inType), 
+            mystdout`函数 ${validMultiTypes} 检测到入参 inType=${inType} 不在规定范围 ${vDataTypeValues} 内。`);
+
+    }else if(isArray(inType)){
+        // 如果数组为空，则抛异常。因为类型必须指定，不能为空。
+        // 检测类型数组的内容。如果有一个不是 VDATA_TYPE 的内容，就抛异常。
+        throwParameterError(
+            inType.length<=0 || inType.filter(value=>!vDataTypeValues.includes(value)).length>0,
+            mystdout`函数 ${validMultiTypes} 检测到入参 inType=${inType} 内部为空，或者有部分内容不在规定范围 ${vDataTypeValues} 内。`);
+
+    }else{
+        // 不是字符串、也不是数组，则直接抛异常，它不合规
+        throwParameterError(true, mystdout`函数 ${validMultiTypes} 检测到入参 inType=${inType} 既不是指定字符串，也不是指定的字符串数组，不符合参数要求。`);
+    }
+
+    // inErrorInfo
+    throwParameterError(
+        !isString(inErrorInfo) || isEmptyString(inErrorInfo), 
+        mystdout`函数 ${validMultiTypes} 检测到入参 inErrorInfo=${inErrorInfo} 不是非空字符串。`);
+
+    // inCanBeEmpty
+    throwParameterError(
+        !isBoolean(inCanBeEmpty), 
+        mystdout`函数 ${validMultiTypes} 检测到入参 inCanBeEmpty=${inCanBeEmpty} 不是布尔值。`);
+    
+    // inTargetTypeArr
+    throwParameterError(
+        !isArray(inTargetTypeArr),
+        mystdout`函数 ${validMultiTypes} 检测到入参 inTargetTypeArr=${inTargetTypeArr} 不是数组。`);
+
+    // 校验结束，赋值处理（因为下面的 inTargetTypeArr 需要用到）
+    let myTypes = [];
+    if(isString(inType)) myTypes.push(valueOfString(inType));
+    if(isArray(inType)) inType.forEach(value=>{ myTypes.push(valueOfString(value)); });
+    let myErrorInfo = valueOfString(inErrorInfo);
+    let myCanBeEmpty = valueOfBoolean(inCanBeEmpty);
+
+    // inTargetTypeArr（这个数据类型数组，不是必填的。只在有数据类型要求的 数组、Set、Object 判断时需要）
+    // 另外，这里的 myTypes 是一个数组，它里面有一个是 target 类型，就要判断
+    let targeTypeArr = [VDATA_TYPE.targetObj, VDATA_TYPE.targetObjSet, VDATA_TYPE.targetObjArray, VDATA_TYPE.targetObj2DArray];
+    let hasTargetType = myTypes.filter(value=>targeTypeArr.includes(value)).length>0;
+    if(hasTargetType){
+        // 类型数组的长度
+        let typeCount = inTargetTypeArr.length;
+        // 类型数组中，不是类型的内容长度
+        let notClsCount = inTargetTypeArr.filter(value=>!isClass(value)).length;
+        // 没有内容 或者 有不是类型的内容，抛异常
+        throwParameterError(
+            typeCount<=0 || notClsCount>0,
+            mystdout`函数 ${validMultiTypes} 检测到入参 inTargetTypeArr=${inTargetTypeArr} 长度为 0 或者 有非类型内容。`);
+    }
+
+    // 处理 inTargetTypeArr 赋值
+    let myTargetTypes = [...inTargetTypeArr];
+
+    // ==================== 开始循环 valid 。只要有一个 ok 则 ok。如果产生 ParameterError ，则需要抛出到外部。
+    
+    // 定义一个异常数组，用来存储抛出的异常。
+    let myThrErrors = [];
+    // 定义一个结果数组，用来存储返回的结果。
+    let myThrResults = [];
+    // 循环执行校验，并储存对应的结果 和 异常。（这里循环多少次，取决于传入的 inType 有多少种类型）
+    for(let i=0;i<myTypes.length;i++){
+        let tmpResult = undefined;
+        let tmpError = undefined;
+        try{
+            // 如果这里不抛异常，他会接收到一个值 或者 对象引用
+            tmpResult = validSingleType(pValue, myTypes[i], myErrorInfo, myCanBeEmpty, myTargetTypes);
+        }catch(err){
+            if(err instanceof VerificationError) {
+                // 如果是校验异常，应该存储
+                tmpError = err; 
+            }else{
+                // 如果是 ParameterError ，或者其它异常，那代表写错了代码，需要提示。请直接抛出。
+                throw err ;
+            }
+        }
+        // 不管是否抛异常，这里都是要存的。
+        myThrResults.push(tmpResult);
+        myThrErrors.push(tmpError);
+    }
+
+    // 先检查存储结果的数组是否正常
+    // 有多少个类型，就有多少个结果 和 异常信息
+    // 有问题则抛出 ParameterError
+    throwParameterError(
+        myTypes.length!==myThrErrors.length || myTypes.length!==myThrResults.length, 
+        mystdout`函数 ${validMultiTypes} 检测到处理结果不匹配。myTypes=${myTypes}, myThrResults=${myThrResults}, myThrErrors=${myThrErrors}`);
+    
+    // 这里根据 数组内的结果来判断（这里有多少个结果，取决于传入的 inType 有多少种类型。每一个类型，对应定一个结果）
+    // 一般来说，传入的 inType 就一个。如果有多个，只要一个合格就合格。
+    // 所以，这里只需要找到一个 合格的结果，就可以返回了。
+    let resultIndex = myThrErrors.findIndex(value=>value===undefined);
+    
+    // ==================== 返回结果
+    if(resultIndex<0){
+        // 如果找不到合格的结果，则全部类型的检测结果为 不合规，抛出异常提示 VerificationError。取第一个不合格的信息
+        throw myThrErrors[0];
+    }else{
+        // 有一个合格，则返回这个合格的值
+        return myThrResults[resultIndex];
+    }
 
 }
 
+/**
+ * 这里是根据配置信息，校验一些内容
+ */
 function validOptions(){
-
+    
 }
 
 export {
     VDATA_TYPE,
 
-    validSingleType
+    validSingleType, validMultiTypes
 }
