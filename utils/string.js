@@ -30,7 +30,7 @@ function myToString(param) {
     
     // 空值
     if(param===undefined || param===null || Number.isNaN(param)) {
-        result = `Empty (undefined, null, NaN)`;
+        result = `Empty (undefined ${param===undefined?'<-':''}, null ${param===null?'<-':''}, NaN ${Number.isNaN(param)?'<-':''})`;
         return result;
     }
 
