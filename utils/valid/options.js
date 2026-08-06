@@ -23,7 +23,8 @@ import {
     isEmptySet,
     isEmptyArray,
     isEmpty2DArray,
-    isEmptyMap
+    isEmptyMap,
+    isObjectLiteral
 } from "../datatype.js";
 import { mystdout } from "../string.js";
 import { throwError, throwParameterError } from "./throw.js";
@@ -394,14 +395,172 @@ function validMultiTypes(pValue, inType=[VDATA_TYPE.string], inErrorInfo='测试
 }
 
 /**
- * 这里是根据配置信息，校验一些内容
+ * 这函数的主要作用是：检测单个配置信息对象是否填写正确。它有4个参数，按照实际情况填写就可以了。
+ * 其中，value, type 是必填的。canBeEmpty 和 targetTypes 是选填的。具体描述，参考下面的 example 信息
+ * 
+ * @param {object} [config] 校验用的配置对象。一般用 {} 对象字面量的写法。注意：这里没有默认值。
+ * @param {*} [config.value] 必填 -- 待校验的参数值 ;
+ * @param {string} [config.type] 必填 -- 数据类型字符串 或者 数据类型字符串数组。参考：`VDATA_TYPE` 常量 ;
+ * @param {boolean} [config.canBeEmpty] 选填 -- 数据是否可以为空。对于字符串，指空字符串。对于数组、Set、Map，指是否可以为空数组、空Set、空Map。默认：false ;
+ * @param {Array<Class>} [config.targetTypes] 选填 -- 如果 type 是 `VDATA_TYPE` 常量中 target 开头的数据类型，指定一个类型数组。它用于判断内部数据是否与数组内部信息符合。默认：[] ;
+ * @throws 如果校验通过则不做任何处理；否则，抛出 ParameterError 。这个 ParameterError 可能有2种类型：本函数的参数异常，或者 调用的函数内部参数异常。
+ * 
+ * @example
+ * // 在详细配置内部，有以下的几个固定属性：
+ * let config = { value:param1, type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:[] };
+ * 
  */
-function validOptions(){
+function checkSingleConfig(config){
+
+    // 首先检查，入参是否为一个对象字面量 或者 普通的 Object 对象。
+    throwParameterError(!isObjectLiteral(config), mystdout`函数 ${checkSingleConfig} 检测到 config=${config} 不是对象字面量 或者 普通Object对象。`);
+
+    // 获取当前这个对象的 key 名数组。
+    let keys = Object.keys(config);
+
+    // 然后检查，4个参数是否都填写清楚。
+    // value，必填
+    throwParameterError(!keys.includes('value'), mystdout`函数 ${checkSingleConfig} 检测到 config 中缺少 value 配置信息。传入的对象 键名=${keys}`);
+    // type，必填，且需要校验内容
+    throwParameterError(!keys.includes('type'), mystdout`函数 ${checkSingleConfig} 检测到 config 中缺少 type 配置信息。传入的对象 键名=${keys}`);
+    let tmpTypes = isArray(config.type) ? config.type : [ isString(config.type) ? valueOfString(config.type) : config.type ];
+    let vDataTypeValues = Object.values(VDATA_TYPE);
+    throwParameterError(
+        tmpTypes.length<=0 || tmpTypes.filter(value=>!vDataTypeValues.includes(value)).length>0,
+        mystdout`函数 ${checkSingleConfig} 检测到 config 中 type 配置信息不在规定范围内。type=${config.type}, 范围=${vDataTypeValues}`);
+    // canBeEmpty。选填，如果有的话要校验它的值是否为布尔值
+    if(keys.includes('canBeEmpty')) throwParameterError(
+        !isBoolean(config.canBeEmpty), mystdout`函数 ${checkSingleConfig} 检测到 config 填写了 canBeEmpty=${config.canBeEmpty} 配置信息。但它不是布尔值。`);
+    // targetTypes。根据配置选填。一个类型数组
+    // 如果 type 的内容包含了 target 开头的选项，则一定要填写
+    // 如果 type 的内容是其它，则可填可不填。但是填了就要校验
+    // 至于填写内容，使用 isClass 判断。
+    let hadTargetTypes = keys.includes('targetTypes') ;
+    let isTarget = tmpTypes.filter(value=>value.startsWith('TARGET')).length>0;
+    if(hadTargetTypes) throwParameterError(
+                    !isArray(config.targetTypes), mystdout`函数 ${checkSingleConfig} 检测到 config 中 targetTypes=${config.targetTypes} 不是数组`);
+    if(isTarget) throwParameterError(
+                    !isArray(config.targetTypes) || config.targetTypes.length<=0 || config.targetTypes.filter(value=>!isClass(value)).length>0, 
+                    mystdout`函数 ${checkSingleConfig} 检测到 config 中 targetTypes=${config.targetTypes} 存在不是类型信息的内容`);
+}
+
+/**
+ * 这函数的主要作用是：检测多个配置信息对象是否填写正确。
+ * 在 checkSingleConfig 中是检测单个配置对象，这里是检测多个配置对象。而整个配置定义为一个对象字面量 configs={}。
+ * 在 代码实现上，它是依赖 checkSingleConfig 的。
+ * 
+ * @param {Object} paramConfigs 配置信息对象。对象的写法可以参数考 上面的样例。
+ * @throws 如果校验通过则不做任何处理；否则，抛出 ParameterError 。这个 ParameterError 可能有2种类型：本函数的参数异常，或者 调用的函数内部参数异常。
+ * 
+ * @example
+ * // 对于整个配置 configs ，它一般有2个信息：name, config。name 是要检测的参数名，config 则是检测所需要的规则定义。
+ * let configs = {
+ *     'param1':{value:param1, type:VDATA_TYPE.string}, 
+ *     'param2':{value:param2, type:[VDATA_TYPE.func, VDATA_TYPE.cls], canBeEmpty:false },
+ *     'param3':{value:param3, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number]}, 
+ *     ... 
+ * }
+ * 
+ */
+function checkConfigs(paramConfigs){
+
+    // 首先检测，是不是一个 对象字面量
+    throwParameterError(
+        !isObjectLiteral(paramConfigs), mystdout`函数 ${checkConfigs} 检测到入参 paramConfigs=${paramConfigs} 不是对象字面量 或者 普通Object对象。`);
     
+    // 然后，整个对象必须有键值对。
+    throwParameterError(
+        Object.keys(paramConfigs).length<=0, mystdout`函数 ${checkConfigs} 检测到入参 paramConfigs=${paramConfigs} 对象没有对应配置信息。`);
+    
+    // 然后检测，key 所对应的值，是否是一个 单一配置对象。
+    let keys = Object.keys(paramConfigs);
+    for(let i=0;i<keys.length;i++){
+        let tmpKey = keys[i];
+        let tmpValue = paramConfigs[tmpKey];
+        // 检查单个配置对象，是否填写正确。
+        try {
+            checkSingleConfig(tmpValue);
+        }catch(err){
+            // 先提取真正的异常信息
+            let msg = err.message;
+            // 然后构造一个新的
+            let newMsg = mystdout`函数 ${checkConfigs} 检测到有一个配置填写错误。key=${tmpKey} value=${tmpValue}。详细信息，${msg}`;
+            // 抛出异常
+            throwParameterError(true, newMsg);
+        }
+    }
+
+    // 如果通过，则无需处理。
+}
+
+/**
+ * 根据传入的配置信息对象 paramConfigs，判断待处理的参数，是否符合类型要求。
+ * 在校验处理上，这个函数使用了 validMultiTypes 函数。
+ * 在配置对象检测处理上，这个函数使用了 checkConfigs 函数。
+ * 
+ * @param {Object} paramConfigs 这个是配置好的待校验信息对象。它的写法，参考 example 信息
+ * @param {string} funcName 这参数用于标记 paramConfigs 中的参数来自哪个函数。默认为空字符串。
+ * @param {string} className 这参数用于标记 paramConfigs 中的参数来自那个类。默认为空字符。
+ * @returns {Object} 如果校验通过，会返回一个对象字面量。这里面装着 参数名和参数已校验的值。参考 example 信息
+ * @throws 对于抛出异常有2种：
+ * 第一种，是 ParameterError 这个函数、依赖函数等等，本身的参数异常导致抛出；第二种，是 VerificationError 业务上的校验异常。
+ * 
+ * @example
+ * // 对于批量校验的配置对象，它以待校验的 参数名为key，详细配置为value。
+ * // 配置信息填写参考如下：
+ * let paramConfigs = {
+ *     'param1':{value:param1, type:VDATA_TYPE.string}, 
+ *     'param2':{value:param2, type:[VDATA_TYPE.func, VDATA_TYPE.cls], canBeEmpty:false, targetTypes:[]},
+ *     'param3':{value:param3, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number]}, 
+ *     ... 
+ * }
+ * 
+ * // 返回结果举例
+ * let result = {
+ *     'param1':'validedValue', 'param2':'validedValue2'
+ * }
+ */
+function validTypesByConfigs(paramConfigs, funcName="", className=""){
+
+    // 首先校验 paramConfigs 配置是否填写正确
+    checkConfigs(paramConfigs);
+
+    // 然后校验 funcName
+    throwParameterError(!isString(funcName), mystdout`函数 validTypesByConfigs 检测到参数错误 funcName=${funcName}`);
+
+    // 然后校验 className
+    throwParameterError(!isString(className), mystdout`函数 validTypesByConfigs 检测到参数错误 className=${className}`);
+
+    // 关于 所属的类 和 所属函数 的描述
+    let clsAndFuncInfo = mystdout`${className.trim()}-${funcName.trim()}`;
+    // 处理拼接后 class 或者 func 是空的情况。
+    if(clsAndFuncInfo.startsWith('-') || clsAndFuncInfo.endsWith('-')){
+        // 去掉 '-' 这个符号
+        clsAndFuncInfo = clsAndFuncInfo.replace(/[\-]/g, '');
+    }
+
+    // 这里开始循环校验 paramConfigs 的值
+    let results = {};
+    let keys = Object.keys(paramConfigs);
+    for(let i=0;i<keys.length;i++){
+        // 提取临时的 key 和 value 
+        let tmpKey = keys[i];
+        let tmpConfig = paramConfigs[tmpKey];
+        // 构造一个提示信息，用于 VerificationError 异常抛出时，显示给调用者
+        let errorMsg = mystdout`在 ${clsAndFuncInfo} 中, 发现参数 ${tmpKey} 校验不通过。设置如下: value=${tmpConfig.value}, type=${tmpConfig.type}, canBeEmpty=${tmpConfig.canBeEmpty}, targetType=${tmpConfig.targetTypes}`;
+        // 校验 配置中 指定的内容（canBeEmpty 和 targetTypes 有默认值。）
+        // 当 canBeEmpty 和 targetTypes 不写，则会获取到一个 undefined 。在传参时, undefined 会识别到函数的默认参数设置
+        let validedValue = validMultiTypes(tmpConfig.value, tmpConfig.type, errorMsg, tmpConfig.canBeEmpty, tmpConfig.targetTypes);
+        // 如果通过，写入对象中
+        results[tmpKey] = validedValue;
+    }
+
+    // 返回结果
+    return results;
 }
 
 export {
     VDATA_TYPE,
 
-    validSingleType, validMultiTypes
+    validSingleType, validMultiTypes, checkSingleConfig, checkConfigs, validTypesByConfigs
 }

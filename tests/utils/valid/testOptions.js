@@ -17,7 +17,7 @@
 import { Assert } from "../../testTools.js";
 
 // ========= 导入测试对象
-import { VDATA_TYPE, validSingleType, validMultiTypes } from "../../../utils/valid/options.js";
+import { VDATA_TYPE, validSingleType, validMultiTypes, checkSingleConfig, checkConfigs, validTypesByConfigs } from "../../../utils/valid/options.js";
 import { ParameterError, VerificationError } from "../../../models/errors.js";
 import { DOM_PARSER } from "../../../utils/html.js";
 
@@ -1766,6 +1766,1821 @@ function testOptionsMultiValues(){
     Assert.equalsStrictly(testMultiObj3, finalResult3);
 }
 
+function testOptionsCheckSingleConfig(){
+    
+    // 这里测试 checkSingleConfig 函数是否正常 它有5个参数要测试，第一个是 config 本身。然后是 每个小参数
+    // config
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(undefined); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(null); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(NaN); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(''); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig('sss'); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new String('')); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new String('sss')); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(123); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(-1); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Number(123)); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Number(-1)); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(true); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(false); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Boolean(true)); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Boolean(false)); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(Symbol('uid')); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(Symbol.for('uid')); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(Error); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(ParameterError); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(testOptionsCheckSingleConfig); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(function(){}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(()=>{}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig([]); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig([1,2,3]); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig([[]]); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig([[1,2,3],[4,5,6]]); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Map()); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Map([['a',1],['b', 2]])); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Set()); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Set([1,2,3])); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(/123/); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new RegExp('123')); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({a:1, b:2}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig(new Object()); }, /checkSingleConfig/, ParameterError);
+    
+    // config 内部 value 
+    // 这里应该是不合格的(必填缺失)
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue'}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({type:VDATA_TYPE.string}); }, /checkSingleConfig/, ParameterError);
+    // 这里应该是合格的（必填符合）
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string}); });
+
+    // config 内部 type 
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:undefined, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:null, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:NaN, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:'', canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:'sss', canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new String(''), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new String('sss'), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:123, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:-1, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Number(123), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Number(-1), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:true, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:false, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Boolean(true), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Boolean(false), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:Symbol('uid'), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:Symbol.for('uid'), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:Error, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:ParameterError, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:testOptionsCheckSingleConfig, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:function(){}, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:()=>{}, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[1,2,3], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[[]], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[[1,2,3],[4,5,6]], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Map(), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Map([['a',1],['b', 2]]), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Set(), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Set([1,2,3]), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:/123/, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new RegExp('123'), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:{}, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:{a:1, b:2}, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:new Object(), canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    //
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[undefined], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[null], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[NaN], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[''], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:['sss'], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new String('')], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new String('sss')], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[123], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[-1], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Number(123)], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Number(-1)], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[true], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[false], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Boolean(true)], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Boolean(false)], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[Symbol('uid')], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[Symbol.for('uid')], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[Error], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[ParameterError], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[testOptionsCheckSingleConfig], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[function(){}], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[()=>{}], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[[]], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[[1,2,3]], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[[[]]], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[[[1,2,3],[4,5,6]]], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Map()], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Map([['a',1],['b', 2]])], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Set()], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Set([1,2,3])], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[/123/], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new RegExp('123')], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[{}], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[{a:1, b:2}], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[new Object()], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    // 这里是验证数值范围是否判断成功。
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:[]}); });
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:[VDATA_TYPE.string], canBeEmpty:false, targetTypes:[]}); });
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:[VDATA_TYPE.string, VDATA_TYPE.func], canBeEmpty:false, targetTypes:[]}); });
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:[VDATA_TYPE.string, 123], canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError); 
+
+    // config 内部 canBeEmpty
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:undefined, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:null, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:NaN, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:'', targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:'sss', targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new String(''), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new String('sss'), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:123, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:-1, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Number(123), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Number(-1), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:true, targetTypes:[]}); });
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:[]}); });
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Boolean(true), targetTypes:[]}); });
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Boolean(false), targetTypes:[]}); });
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:Symbol('uid'), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:Symbol.for('uid'), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:Error, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:ParameterError, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:testOptionsCheckSingleConfig, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:function(){}, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:()=>{}, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:[], targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:[1,2,3], targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:[[]], targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:[[1,2,3],[4,5,6]], targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Map(), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Map([['a',1],['b', 2]]), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Set(), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Set([1,2,3]), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:/123/, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new RegExp('123'), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:{}, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:{a:1, b:2}, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:new Object(), targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+
+    // config 内部 targetTypes
+    // 这有2个规则：type 不是 target 开头，则 targetTypes 可以不填。但是填了，就要校验是否为数组。
+    //             type 是 target 开头，则一定要校验，且内容必须为 Class 
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:undefined}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:null}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:NaN}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:''}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:'sss'}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new String('')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new String('sss')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:123}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:-1}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Number(123)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Number(-1)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:true}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:false}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Boolean(true)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Boolean(false)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:Symbol('uid')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:Symbol.for('uid')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:Error}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:ParameterError}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:testOptionsCheckSingleConfig}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:function(){}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:()=>{}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:[]}); }); // 如果不是 target 类型，则只需要为数组
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:[1,2,3]}); }, /checkSingleConfig/, ParameterError); 
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:[[]]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:[[1,2,3],[4,5,6]]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Map()}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Map([['a',1],['b', 2]])}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Set()}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Set([1,2,3])}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:/123/}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new RegExp('123')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:{}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:{a:1, b:2}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.string, canBeEmpty:false, targetTypes:new Object()}); }, /checkSingleConfig/, ParameterError);
+    // 
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:undefined}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:null}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:NaN}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:''}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:'sss'}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new String('')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new String('sss')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:123}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:-1}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Number(123)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Number(-1)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:true}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:false}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Boolean(true)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Boolean(false)}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:Symbol('uid')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:Symbol.for('uid')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:Error}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:ParameterError}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:testOptionsCheckSingleConfig}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:function(){}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:()=>{}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]}); });
+    Assert.throwsErrorsNone(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number]}); });
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, 111]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[1,2,3]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[[]]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[[1,2,3],[4,5,6]]}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Map()}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Map([['a',1],['b', 2]])}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Set()}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Set([1,2,3])}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:/123/}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new RegExp('123')}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:{}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:{a:1, b:2}}); }, /checkSingleConfig/, ParameterError);
+    Assert.throwsErrorsWithMsg(()=>{ checkSingleConfig({value:'pValue', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:new Object()}); }, /checkSingleConfig/, ParameterError);
+    
+}
+
+function testOptionsCheckConfigsParam(){
+
+    // 数据测试，首先是单个 paramConfigs  
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(undefined); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(null); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(NaN); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(''); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs('sss'); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new String('')); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new String('sss')); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(123); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(-1); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Number(123)); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Number(-1)); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(true); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(false); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Boolean(true)); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Boolean(false)); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(Symbol('uid')); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(Symbol.for('uid')); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(Error); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(ParameterError); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(testOptionsCheckConfigsParam); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(function(){}); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(()=>{}); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs([]); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs([1,2,3]); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs([[]]); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs([[1,2,3],[4,5,6]]); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Map()); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Map([['a',1],['b', 2]])); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Set()); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Set([1,2,3])); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(/123/); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new RegExp('123')); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({}); }, /checkConfigs/, ParameterError); // 空对象，依然是不合规的
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({a:1, b:2}); }, /checkConfigs/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs(new Object()); }, /checkConfigs/, ParameterError); 
+
+    // 然后是 paramConfigs 内部参数，必须是有键值对的
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:undefined }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:null }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:NaN }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:'' }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:'sss' }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new String('') }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new String('sss') }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:123 }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:-1 }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Number(123) }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Number(-1) }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:true }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:false }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Boolean(true) }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Boolean(false) }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:Symbol('uid') }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:Symbol.for('uid') }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:Error }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:ParameterError }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:testOptionsCheckConfigsParam }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:function(){} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:()=>{} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:[] }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:[1,2,3] }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:[[]] }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:[[1,2,3],[4,5,6]] }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Map() }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Map([['a',1],['b', 2]]) }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Set() }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Set([1,2,3]) }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:/123/ }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new RegExp('123') }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:{} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:{a:1, b:2} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:new Object() }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+
+    // 再测试几个配置写法（配置中，value, type 是必填的。而 canBeEmpty 和 targetTypes 是看情况的）
+    // 因为 checkSingleConfig 中测试过了，这里验证下就行了。
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:{value:'111'} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:{type:VDATA_TYPE.string} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ checkConfigs({ test1:{value:'111', type:'2222'} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError);
+    Assert.throwsErrorsNone(()=>{ checkConfigs({ test1:{value:'111', type:VDATA_TYPE.string} }); });
+    Assert.throwsErrorsWithMsg(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.string, canBeEmpty:'111'} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsNone(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.string, canBeEmpty:true} }); });
+    Assert.throwsErrorsWithMsg(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.string, canBeEmpty:true, targetTypes:111} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsNone(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.string, canBeEmpty:true, targetTypes:[]} }); }); 
+    Assert.throwsErrorsWithMsg(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.targetObj, canBeEmpty:true, targetTypes:111} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsWithMsg(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.targetObj, canBeEmpty:true, targetTypes:[]} }); }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsNone(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.targetObj, canBeEmpty:true, targetTypes:[String]} }); }); 
+    // 再测试下，多个配置的情况
+    Assert.throwsErrorsWithMsg(()=>{ 
+        checkConfigs({ test1:{value:'111', type:VDATA_TYPE.string}, test2:{} }); 
+    }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    // 再测试下，type 为数组的情况
+    Assert.throwsErrorsWithMsg(()=>{ 
+        checkConfigs({ test1:{value:'111', type:[VDATA_TYPE.string, '123']} }); 
+    }, /.+checkConfigs.+checkSingleConfig.+/, ParameterError); 
+    Assert.throwsErrorsNone(()=>{ 
+        checkConfigs({ test1:{value:'111', type:[VDATA_TYPE.string, VDATA_TYPE.func]} }); 
+    }); 
+}
+
+function testOptionsValidTypesByConfigsParam(){
+    // 这里测试 函数本身的参数类型校验 ParameterError
+    // 参数1
+    Assert.throwsErrors(()=>{ validTypesByConfigs(undefined, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(null, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(NaN, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs('', '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs('sss', '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new String(''), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new String('sss'), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(123, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(-1, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Number(123), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Number(-1), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(true, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(false, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Boolean(true), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Boolean(false), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(Symbol('uid'), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(Symbol.for('uid'), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(Error, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(ParameterError, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(testOptionsValidTypesByConfigsParam, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(function(){}, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(()=>{}, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs([], '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs([1,2,3], '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs([[]], '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs([[1,2,3],[4,5,6]], '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Map(), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Map([['a',1],['b', 2]]), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Set(), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Set([1,2,3]), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(/123/, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new RegExp('123'), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({}, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({a:1, b:2}, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs(new Object(), '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({a:1, b:2}, '', ''); }, ParameterError); // paramConfigs 有固定格式。一般的对象不符合
+    Assert.throwsErrors(()=>{ validTypesByConfigs({a:{value:123}}, '', ''); }, ParameterError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({a:{type:VDATA_TYPE.string}}, '', ''); }, ParameterError); 
+    // 来一个合规的
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', 'cls'); }, ParameterError);
+    
+    // 参数2
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, undefined, 'cls'); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, null, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, NaN, 'cls'); }, ParameterError);
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, '', 'cls'); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'sss', 'cls'); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new String(''), 'cls'); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new String('sss'), 'cls'); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 123, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, -1, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Number(123), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Number(-1), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, true, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, false, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Boolean(true), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Boolean(false), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, Symbol('uid'), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, Symbol.for('uid'), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, Error, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, ParameterError, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, testOptionsValidTypesByConfigsParam, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, function(){}, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, ()=>{}, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, [], 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, [1,2,3], 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, [[]], 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, [[1,2,3],[4,5,6]], 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Map(), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Map([['a',1],['b', 2]]), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Set(), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Set([1,2,3]), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, /123/, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new RegExp('123'), 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, {}, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, {a:1, b:2}, 'cls'); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, new Object(), 'cls'); }, ParameterError);
+
+    // 参数3
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', undefined); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', null); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', NaN); }, ParameterError);
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', ''); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', 'sss'); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new String('')); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new String('sss')); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', 123); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', -1); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Number(123)); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Number(-1)); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', true); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', false); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Boolean(true)); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Boolean(false)); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', Symbol('uid')); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', Symbol.for('uid')); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', Error); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', ParameterError); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', testOptionsValidTypesByConfigsParam); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', function(){}); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', ()=>{}); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', []); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', [1,2,3]); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', [[]]); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', [[1,2,3],[4,5,6]]); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Map()); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Map([['a',1],['b', 2]])); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Set()); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Set([1,2,3])); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', /123/); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new RegExp('123')); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', {}); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', {a:1, b:2}); }, ParameterError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({'param1':{value:'123', type:VDATA_TYPE.string}}, 'func', new Object()); }, ParameterError);
+}
+
+function testOptionsValidTypesByConfigsVeri(){
+
+    // 这里测试 函数校验的效果 VerificationError 。这里要求配置信息填写正确。
+
+    // 先测试下抛出信息
+    try{ validTypesByConfigs({ testParam1:{value:'abc', type:VDATA_TYPE.number} }); }catch(err){ console.log('这是测试输出', err.message); }
+    try{ validTypesByConfigs({ testParam1:{value:'abc', type:VDATA_TYPE.number} }, 'func'); }catch(err){ console.log('这是测试输出', err.message); }
+    try{ validTypesByConfigs({ testParam1:{value:'abc', type:VDATA_TYPE.number} }, 'func', 'cls'); }catch(err){ console.log('这是测试输出', err.message); }
+    // 
+    validTypesByConfigs({ testParam1:{value:'abc', type:[VDATA_TYPE.number, VDATA_TYPE.string]} });
+
+    // 这里开始测试 要注意 canBeEmpty 和 targetTypes 的处理
+    
+    // 构建一些 HTML Element 和 HTML Element List
+    let htmlStr = `
+    <div>
+        <input type="text" id="input1" name="inputtester" value=""/>
+        <input type="text" id="input2" name="inputtester" value=""/>
+    </div>
+    `;
+    let myDom = DOM_PARSER.parseFromString(htmlStr, 'text/html');
+    let htmlElem1 = myDom.getElementById('input1');
+    let htmlElem2 = myDom.querySelector('#input2');
+    let htmlElemList1 = myDom.getElementsByTagName('input');
+    let htmlElemList2 = myDom.querySelectorAll('input');
+    
+    // null（要测试3个东西 null\undefined\NaN）
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.null} }); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:null, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    //
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.null} }); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:undefined, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.null} }); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:NaN, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let null1 = null;
+    let null2 = undefined;
+    let null3 = NaN;
+    let nullResult = validTypesByConfigs({
+        null1:{value:null1, type:VDATA_TYPE.null}, 
+        null2:{value:null2, type:VDATA_TYPE.null}, 
+        null3:{value:null3, type:VDATA_TYPE.null}
+    });
+    Assert.equalsStrictly(null1, nullResult['null1']);
+    Assert.equalsStrictly(null2, nullResult['null2']);
+    Assert.equalsStrictly(true, Number.isNaN(nullResult['null3']));
+
+    // string（要测试 字符串值 和 字符串对象，另外要注意 canBeEmpty）
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.string, canBeEmpty:true} }); }); // 空字符串
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'', type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    //
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.string} }); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.string, canBeEmpty:true} }); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:'sss', type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    //
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.string, canBeEmpty:true} }); }); //空字符串
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.object} }); }); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String(''), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError);
+    //
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.string} }); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.string, canBeEmpty:true} }); });
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.object} }); }); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ str1:{value:new String('sss'), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let str1 = 'aaa';
+    let str2 = '   ';
+    let str3 = '';
+    let str4 = new String(str1);
+    let str5 = new String(str2);
+    let str6 = new String(str3);
+    let results = validTypesByConfigs({
+        str1:{value:str1, type:VDATA_TYPE.string, canBeEmpty:true},
+        str2:{value:str2, type:VDATA_TYPE.string, canBeEmpty:true},
+        str3:{value:str3, type:VDATA_TYPE.string, canBeEmpty:true},
+        str4:{value:str4, type:VDATA_TYPE.string, canBeEmpty:true},
+        str5:{value:str5, type:VDATA_TYPE.string, canBeEmpty:true},
+        str6:{value:str6, type:VDATA_TYPE.string, canBeEmpty:true}
+    });
+    Assert.equalsStrictly(str1, results['str1']);
+    Assert.equalsStrictly(str2, results['str2']);
+    Assert.equalsStrictly(str3, results['str3']);
+    Assert.equalsStrictly(str4.valueOf(), results['str4']);
+    Assert.equalsStrictly(str5.valueOf(), results['str5']);
+    Assert.equalsStrictly(str6.valueOf(), results['str6']);
+
+    // number（要注意数值和对象的判断）
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.number} }); }); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.number} }); }); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.object} }); }); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Number(123), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let num1 = 123;
+    let num2 = -1;
+    let num3 = new Number('123');
+    let num4 = new Number('-1');
+    let resultsNum = validTypesByConfigs({
+        num1:{value:num1, type:VDATA_TYPE.number},
+        num2:{value:num2, type:VDATA_TYPE.number},
+        num3:{value:num3, type:VDATA_TYPE.number},
+        num4:{value:num4, type:VDATA_TYPE.number}
+    });
+    Assert.equalsStrictly(num1, resultsNum['num1']);
+    Assert.equalsStrictly(num2, resultsNum['num2']);
+    Assert.equalsStrictly(num3.valueOf(), resultsNum['num3']);
+    Assert.equalsStrictly(num4.valueOf(), resultsNum['num4']);
+
+    // boolean（要注意布尔值，和布尔对象）
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:true, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:false, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    //
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(true), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Boolean(false), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let bool1 = true;
+    let bool2 = false;
+    let bool3 = new Boolean(true);
+    let bool4 = new Boolean(false);
+    let resultsBool = validTypesByConfigs({
+        bool1:{value:bool1, type:VDATA_TYPE.boolean},
+        bool2:{value:bool2, type:VDATA_TYPE.boolean},
+        bool3:{value:bool3, type:VDATA_TYPE.boolean},
+        bool4:{value:bool4, type:VDATA_TYPE.boolean}
+    });
+    Assert.equalsStrictly(bool1, resultsBool['bool1']);
+    Assert.equalsStrictly(bool2, resultsBool['bool2']);
+    Assert.equalsStrictly(bool3.valueOf(), resultsBool['bool3']);
+    Assert.equalsStrictly(bool4.valueOf(), resultsBool['bool4']);
+
+    // symbol 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol('sym1'), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    //
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Symbol.for('sym2'), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let sym1 = Symbol('sym1');
+    let sym2 = Symbol.for('sym2');
+    let resultsSymbol = validTypesByConfigs({
+        sym1:{value:sym1, type:VDATA_TYPE.symbol},
+        sym2:{value:sym2, type:VDATA_TYPE.symbol}
+    });
+    Assert.equalsStrictly(sym1, resultsSymbol['sym1']);
+    Assert.equalsStrictly(sym2, resultsSymbol['sym2']);
+
+    // func （注意，函数有3种：有名函数、匿名函数、箭头函数）
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.cls} }); }, VerificationError); // 函数也是类
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:testOptionsFunc, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.cls} }); }, VerificationError); // 在object中，这种写法会指定 name 值为 value
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:function(){}, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.cls} }); }, VerificationError);  // 箭头函数，不算类
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:()=>{}, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let fun1 = ()=>{};
+    let fun2 = function(){}
+    let fun3 = testOptionsFunc;
+    let resultsFuncs = validTypesByConfigs({
+        fun1:{value:fun1, type:VDATA_TYPE.func},
+        fun2:{value:fun2, type:VDATA_TYPE.func},
+        fun3:{value:fun3, type:VDATA_TYPE.func}
+    });
+    Assert.equalsStrictly(fun1, resultsFuncs['fun1']);
+    Assert.equalsStrictly(fun2, resultsFuncs['fun2']);
+    Assert.equalsStrictly(fun3, resultsFuncs['fun3']);
+
+    // cls
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.func} }); }, VerificationError); // 类也是函数
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:Error, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.func} }); }, VerificationError); // 类也是函数
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:String, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let cls1 = Error ;
+    let cls2 = Assert ;
+    let resultsCls = validTypesByConfigs({
+        cls1:{value:cls1, type:VDATA_TYPE.cls},
+        cls2:{value:cls2, type:VDATA_TYPE.cls}
+    });
+    Assert.equalsStrictly(cls1, resultsCls['cls1']);
+    Assert.equalsStrictly(cls2, resultsCls['cls2']);
+
+    // array 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.func} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.array, canBeEmpty:true} }); }, VerificationError); // 可以空时，才不抛异常
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.object} }); }, VerificationError); // 数组也是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1,2,3], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let arr1 = [];
+    let arr2 = [1,2,3];
+    let resultsArray = validTypesByConfigs({
+        arr1:{value:arr1, type:VDATA_TYPE.array, canBeEmpty:true},
+        arr2:{value:arr2, type:VDATA_TYPE.array}
+    });
+    Assert.equalsStrictly(arr1, resultsArray['arr1']);
+    Assert.equalsStrictly(arr2, resultsArray['arr2']);
+
+    // 2dArray 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.func} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.array} }); }, VerificationError); // 二维数组，也是数组
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.array, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.array2d, canBeEmpty:true} }); }, VerificationError); // 可以为空，才不抛异常
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.object} }); }, VerificationError); // 数组也是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.array} }); }, VerificationError); // 二维数组，也是数组
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.array, canBeEmpty:true} }); }, VerificationError);
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.array2d, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1,2,3]], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let arr2d1 = [[]];
+    let arr2d2 = [[1,2,3]];
+    let resultsArray2d = validTypesByConfigs({
+        arr2d1:{value:arr2d1, type:VDATA_TYPE.array2d, canBeEmpty:true},
+        arr2d2:{value:arr2d2, type:VDATA_TYPE.array2d}
+    });
+    Assert.equalsStrictly(arr2d1, resultsArray2d['arr2d1']);
+    Assert.equalsStrictly(arr2d2, resultsArray2d['arr2d2']);
+
+    // set
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.set, canBeEmpty:true} }); }, VerificationError); // 可为空，才true
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.object} }); }, VerificationError); // set 也是一个对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.set, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1,2,3]), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let set1 = new Set();
+    let set2 = new Set([1,2,3]);
+    let resultsSet = validTypesByConfigs({
+        set1:{value:set1, type:VDATA_TYPE.set, canBeEmpty:true},
+        set2:{value:set2, type:VDATA_TYPE.set}
+    });
+    Assert.equalsStrictly(set1, resultsSet['set1']);
+    Assert.equalsStrictly(set2, resultsSet['set2']);
+
+    // map
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.map, canBeEmpty:true} }); }, VerificationError); // 可为空才 true 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map(), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.map, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.object} }); }, VerificationError); // Map 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Map([['a', 1],['b', 2]]), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let map1 = new Map();
+    let map2 = new Map([['a', 1],['b', 2]]);
+    let resultsMap = validTypesByConfigs({
+        map1:{value:map1, type:VDATA_TYPE.map, canBeEmpty:true},
+        map2:{value:map2, type:VDATA_TYPE.map}
+    });
+    Assert.equalsStrictly(map1, resultsMap['map1']);
+    Assert.equalsStrictly(map2, resultsMap['map2']);
+
+    // regexp
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new RegExp('123'), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let reg1 = /123/;
+    let reg2 = new RegExp('123');
+    let resultsRegExp = validTypesByConfigs({
+        reg1:{value:reg1, type:VDATA_TYPE.regexp},
+        reg2:{value:reg2, type:VDATA_TYPE.regexp}
+    });
+    Assert.equalsStrictly(reg1, resultsRegExp['reg1']);
+    Assert.equalsStrictly(reg2, resultsRegExp['reg2']);
+
+    // objectliteral
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{a:1, b:2}, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    //
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let objliteral1 = {};
+    let objliteral2 = {a:1, b:2};
+    let objliteral3 = new Object();
+    let resultsObjliteral = validTypesByConfigs({
+        objliteral1:{value:objliteral1, type:VDATA_TYPE.objectliteral},
+        objliteral2:{value:objliteral2, type:VDATA_TYPE.objectliteral},
+        objliteral3:{value:objliteral3, type:VDATA_TYPE.objectliteral}
+    });
+    Assert.equalsStrictly(objliteral1, resultsObjliteral['objliteral1']);
+    Assert.equalsStrictly(objliteral2, resultsObjliteral['objliteral2']);
+    Assert.equalsStrictly(objliteral3, resultsObjliteral['objliteral3']);
+
+    // object
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:{}, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.objectliteral} }); }, VerificationError); // string 不是字面量 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new String(), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    //
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Object(), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[Number]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let obj1 = {};
+    let obj2 = new Object();
+    let obj3 = new String();
+    let resultsObject = validTypesByConfigs({
+        obj1:{value:obj1, type:VDATA_TYPE.object},
+        obj2:{value:obj2, type:VDATA_TYPE.object},
+        obj3:{value:obj3, type:VDATA_TYPE.object}
+    });
+    Assert.equalsStrictly(obj1, resultsObject['obj1']);
+    Assert.equalsStrictly(obj2, resultsObject['obj2']);
+    Assert.equalsStrictly(obj3, resultsObject['obj3']);
+
+    // htmlElem 这是 html 元素。
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem1, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElem2, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let elem1 = htmlElem1;
+    let elem2 = htmlElem2;
+    let resultsHtmlElems = validTypesByConfigs({
+        elem1:{value:elem1, type:VDATA_TYPE.htmlElem},
+        elem2:{value:elem2, type:VDATA_TYPE.htmlElem}
+    });
+    Assert.equalsStrictly(elem1, resultsHtmlElems['elem1']);
+    Assert.equalsStrictly(elem2, resultsHtmlElems['elem2']);
+
+    // htmlElemList 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList1, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:htmlElemList2, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let elemList1 = htmlElemList1;
+    let elemList2 = htmlElemList2;
+    let resultsHtmlElemsList = validTypesByConfigs({
+        elemList1:{value:elemList1, type:VDATA_TYPE.htmlElemList},
+        elemList2:{value:elemList2, type:VDATA_TYPE.htmlElemList}
+    });
+    Assert.equalsStrictly(elemList1, resultsHtmlElemsList['elemList1']);
+    Assert.equalsStrictly(elemList2, resultsHtmlElemsList['elemList2']);
+
+    // targetobj
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:'123', type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:123, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.object} }); }, VerificationError); // 是对象
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:/123/, type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let tarObj1 = '123'
+    let tarObj2 = 123;
+    let tarObj3 = /123/;
+    let resultsTargetObj = validTypesByConfigs({
+        tarObj1:{value:tarObj1, type:VDATA_TYPE.targetObj, targetTypes:[String, Number, RegExp]},
+        tarObj2:{value:tarObj2, type:VDATA_TYPE.targetObj, targetTypes:[String, Number, RegExp]},
+        tarObj3:{value:tarObj3, type:VDATA_TYPE.targetObj, targetTypes:[String, Number, RegExp]}
+    });
+    Assert.equalsStrictly(tarObj1, resultsTargetObj['tarObj1']);
+    Assert.equalsStrictly(tarObj2, resultsTargetObj['tarObj2']);
+    Assert.equalsStrictly(tarObj3, resultsTargetObj['tarObj3']);
+
+    // targetobjSet
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.set, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObjSet, canBeEmpty:true, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set(), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:new Set([1, true, 'aa']), type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let tarobjSet1 = new Set();
+    let tarobjSet2 = new Set([1, true, 'aa']);
+    let resultsTargetObjSet = validTypesByConfigs({
+        tarobjSet1:{value:tarobjSet1, type:VDATA_TYPE.targetObjSet, targetTypes:[String, Number, Boolean], canBeEmpty:true},
+        tarobjSet2:{value:tarobjSet2, type:VDATA_TYPE.targetObjSet, targetTypes:[String, Number, Boolean], canBeEmpty:true}
+    });
+    Assert.equalsStrictly(tarobjSet1, resultsTargetObjSet['tarobjSet1']);
+    Assert.equalsStrictly(tarobjSet2, resultsTargetObjSet['tarobjSet2']);
+
+    // targetobjArray
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.array} }); }, VerificationError); // 这里没有 canbeempty 所以 false
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.set, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObjSet, canBeEmpty:true, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObjArray, canBeEmpty:true, targetTypes:[String, Number, RegExp]} }); }, VerificationError); // 可以为空。
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[1, true, 'aa'], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let tarobjArr1 = [];
+    let tarobjArr2 = [1, true, 'aa'];
+    let resultsTargetObjArr = validTypesByConfigs({
+        tarobjArr1:{value:tarobjArr1, type:VDATA_TYPE.targetObjArray, targetTypes:[String, Number, Boolean], canBeEmpty:true},
+        tarobjArr2:{value:tarobjArr2, type:VDATA_TYPE.targetObjArray, targetTypes:[String, Number, Boolean], canBeEmpty:true}
+    });
+    Assert.equalsStrictly(tarobjArr1, resultsTargetObjArr['tarobjArr1']);
+    Assert.equalsStrictly(tarobjArr2, resultsTargetObjArr['tarobjArr2']);
+
+    // targetobj2DArray
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.array} }); }, VerificationError); // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.array2d, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.set, canBeEmpty:true} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObjSet, canBeEmpty:true, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObjArray, canBeEmpty:true, targetTypes:[String, Number, RegExp]} }); }, VerificationError); // 可以为空。
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[]], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:true, targetTypes:[String, Number, RegExp]} }); }, VerificationError); 
+    // 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.null} }); }, VerificationError);
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.string} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.number} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.boolean} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.symbol} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.func} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.cls} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.array} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.array2d} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.set} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.map} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.regexp} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.objectliteral} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.object} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.htmlElem} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.htmlElemList} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.targetObj, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.targetObjSet, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrors(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.targetObjArray, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({ null1:{value:[[1, true, 'aa']], type:VDATA_TYPE.targetObj2DArray, canBeEmpty:false, targetTypes:[String, Number, Boolean]} }); }, VerificationError); 
+    // 在来一个数值校验，看看校验后的结果，是否和原值一致。
+    let tarObjArr2d1 = [[]];
+    let tarObjArr2d2 = [[1, true, 'aa']];
+    let resultsTargetObjArr2d = validTypesByConfigs({
+        tarObjArr2d1:{value:tarObjArr2d1, type:VDATA_TYPE.targetObj2DArray, targetTypes:[String, Number, Boolean], canBeEmpty:true},
+        tarObjArr2d2:{value:tarObjArr2d2, type:VDATA_TYPE.targetObj2DArray, targetTypes:[String, Number, Boolean], canBeEmpty:true}
+    });
+    Assert.equalsStrictly(tarObjArr2d1, resultsTargetObjArr2d['tarObjArr2d1']);
+    Assert.equalsStrictly(tarObjArr2d2, resultsTargetObjArr2d['tarObjArr2d2']);
+
+    // ========== 这里最后再测试下 多个数据 类型的处理。因为 muliti 方法就是为了处理 多类型判断才设计的。
+    // 假设 我们的参数可以传入 函数、正则，2个类型。则开始测试
+    let testMultiObj1 = ()=>{ return true; }; 
+    let testMultiObj2 = /123/; 
+    let testMultiObj3 = new RegExp('123'); 
+    // 测试 
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({testMultiObj1:{value:testMultiObj1, type:VDATA_TYPE.func}}); });
+    Assert.throwsErrors(()=>{     validTypesByConfigs({testMultiObj2:{value:testMultiObj2, type:VDATA_TYPE.func}}); }, VerificationError);
+    Assert.throwsErrors(()=>{     validTypesByConfigs({testMultiObj3:{value:testMultiObj3, type:VDATA_TYPE.func}}); }, VerificationError);
+    // 
+    Assert.throwsErrors(()=>{     validTypesByConfigs({testMultiObj1:{value:testMultiObj1, type:VDATA_TYPE.regexp}}); }, VerificationError);
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({testMultiObj2:{value:testMultiObj2, type:VDATA_TYPE.regexp}}); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({testMultiObj3:{value:testMultiObj3, type:VDATA_TYPE.regexp}}); });
+    // 2个类型，都允许
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({testMultiObj1:{value:testMultiObj1, type:[VDATA_TYPE.func, VDATA_TYPE.regexp]}}); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({testMultiObj2:{value:testMultiObj2, type:[VDATA_TYPE.func, VDATA_TYPE.regexp]}}); });
+    Assert.throwsErrorsNone(()=>{ validTypesByConfigs({testMultiObj3:{value:testMultiObj3, type:[VDATA_TYPE.func, VDATA_TYPE.regexp]}}); });
+    // 最后校验是否获取到同一个值
+    let finalResult = validTypesByConfigs({
+        testMultiObj1:{value:testMultiObj1, type:[VDATA_TYPE.func, VDATA_TYPE.regexp]}, 
+        testMultiObj2:{value:testMultiObj2, type:[VDATA_TYPE.func, VDATA_TYPE.regexp]},
+        testMultiObj3:{value:testMultiObj3, type:[VDATA_TYPE.func, VDATA_TYPE.regexp]}
+    });
+    Assert.equalsStrictly(testMultiObj1, finalResult['testMultiObj1']);
+    Assert.equalsStrictly(testMultiObj2, finalResult['testMultiObj2']);
+    Assert.equalsStrictly(testMultiObj3, finalResult['testMultiObj3']);
+}
+
 // ========= 导出测试函数
 export {
     testOptionsConstant, testOptionsParamErr, 
@@ -1774,5 +3589,6 @@ export {
     testOptionsMap, testOptionsRegExp, testOptionsObjectLiteral, testOptionsObject, testOptionsHtmlElem,
     testOptionsHtmlElemList, testOptionsTargetObject, testOptionsTargetObjectSet, testOptionsTargetObjectArr, testOptionsTargetObjectArr2d,
     testOptionsValueChecking,
-    testOptionsMultiParamErr, testOptionsMultiValues
+    testOptionsMultiParamErr, testOptionsMultiValues, 
+    testOptionsCheckSingleConfig, testOptionsCheckConfigsParam, testOptionsValidTypesByConfigsParam, testOptionsValidTypesByConfigsVeri
 }
