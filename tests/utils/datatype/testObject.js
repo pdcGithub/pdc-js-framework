@@ -252,6 +252,20 @@ function testIsTargetClass(){
 }
 
 function testIsObject(){
+
+    // 构建一些 HTML Element 和 HTML Element List
+    let htmlStr = `
+    <div>
+        <input type="text" id="input1" name="inputtester" value=""/>
+        <input type="text" id="input2" name="inputtester" value=""/>
+    </div>
+    `;
+    let myDom = new DOMParser().parseFromString(htmlStr, 'text/html');
+    let htmlElem1 = myDom.getElementById('input1');
+    let htmlElem2 = myDom.querySelector('#input2');
+    let htmlElemList1 = myDom.getElementsByTagName('input');
+    let htmlElemList2 = myDom.querySelectorAll('input');
+
     // 空
     Assert.equalsStrictly(false, isObject());
     Assert.equalsStrictly(false, isObject(undefined));
@@ -289,6 +303,11 @@ function testIsObject(){
     Assert.equalsStrictly(true, isObject({a:1, b:2})); // 对象字面量
     Assert.equalsStrictly(true, isObject(new Set([1,2]))); // set
     Assert.equalsStrictly(true, isObject(new Map())); // map
+    // html 元素对象 （是对象）
+    Assert.equalsStrictly(true, isObject(htmlElem1));
+    Assert.equalsStrictly(true, isObject(htmlElem2));
+    Assert.equalsStrictly(true, isObject(htmlElemList1));
+    Assert.equalsStrictly(true, isObject(htmlElemList2));
     // 数组（数组是一个对象）
     Assert.equalsStrictly(true, isObject([]));
     Assert.equalsStrictly(true, isObject([1,2,3]));
@@ -303,6 +322,19 @@ function testIsObjectLiteral(){
      * 注意：对象字面量，它应该是一个通过 {} 或者 new Object() 创建的普通对象; 
      * 它不能是其它常规对象，比如：Array, String, Number, Boolean, Map, Set, RegExp 等等。
      */
+
+    // 构建一些 HTML Element 和 HTML Element List
+    let htmlStr = `
+    <div>
+        <input type="text" id="input1" name="inputtester" value=""/>
+        <input type="text" id="input2" name="inputtester" value=""/>
+    </div>
+    `;
+    let myDom = new DOMParser().parseFromString(htmlStr, 'text/html');
+    let htmlElem1 = myDom.getElementById('input1');
+    let htmlElem2 = myDom.querySelector('#input2');
+    let htmlElemList1 = myDom.getElementsByTagName('input');
+    let htmlElemList2 = myDom.querySelectorAll('input');
 
     // 空
     Assert.equalsStrictly(false, isObjectLiteral());
@@ -343,6 +375,11 @@ function testIsObjectLiteral(){
     Assert.equalsStrictly(true, isObjectLiteral(new Object())); // 对象字面量
     Assert.equalsStrictly(false, isObjectLiteral(new Set([1,2]))); // set
     Assert.equalsStrictly(false, isObjectLiteral(new Map())); // map
+    // html 元素对象 （不是 字面量）
+    Assert.equalsStrictly(false, isObjectLiteral(htmlElem1));
+    Assert.equalsStrictly(false, isObjectLiteral(htmlElem2));
+    Assert.equalsStrictly(false, isObjectLiteral(htmlElemList1));
+    Assert.equalsStrictly(false, isObjectLiteral(htmlElemList2));
     // 数组（数组是一个对象）
     Assert.equalsStrictly(false, isObjectLiteral([]));
     Assert.equalsStrictly(false, isObjectLiteral([1,2,3]));

@@ -119,7 +119,8 @@ function isObjectLiteral(value){
     return isObject(value) && (
         !Array.isArray(value) 
             && !isString(value) && !isNumber(value) && !isBoolean(value) && !isRegexp(value) 
-            && !(value instanceof Map) && !(value instanceof Set) && !(value instanceof Error)
+            && !isMap(value) && !isSet(value) && !(value instanceof Error) 
+            && !isHtmlElement(value) && !isHtmlElementList(value)
     );
 }
 
