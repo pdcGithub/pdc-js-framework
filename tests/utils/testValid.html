@@ -30,6 +30,15 @@
         testAutoVnAofObjectLiteral, testAutoVnAofTargetObject, testAutoVnAofTargetObjectSet, testAutoVnAofTargetObjectArray,
         testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList,
 
+        testOptionsConstant, testOptionsParamErr, 
+        testOptionsNull, testOptionsString, testOptionsNumber, testOptionsBoolean, testOptionsSymbol,
+        testOptionsFunc, testOptionsCls, testOptionsArray, testOptionsArray2d, testOptionsSet,
+        testOptionsMap, testOptionsRegExp, testOptionsObjectLiteral, testOptionsObject, testOptionsHtmlElem,
+        testOptionsHtmlElemList, testOptionsTargetObject, testOptionsTargetObjectSet, testOptionsTargetObjectArr, testOptionsTargetObjectArr2d,
+        testOptionsValueChecking,
+        testOptionsMultiParamErr, testOptionsMultiValues, 
+        testOptionsCheckSingleConfig, testOptionsCheckConfigsParam, testOptionsValidTypesByConfigsParam, testOptionsValidTypesByConfigsVeri,
+
         testValidUtil
     } from "./testValid.js";
     // 导入 report 函数
@@ -45,6 +54,14 @@
                                         testAutoVnAofMap, testAutoVnAofSet, testAutoVnAofArray, testAutoVnAof2DArray,
                                         testAutoVnAofObjectLiteral, testAutoVnAofTargetObject, testAutoVnAofTargetObjectSet, testAutoVnAofTargetObjectArray,
                                         testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList);
+    report('utils/valid/options.js 子模块', testOptionsConstant, testOptionsParamErr, 
+                                        testOptionsNull, testOptionsString, testOptionsNumber, testOptionsBoolean, testOptionsSymbol,
+                                        testOptionsFunc, testOptionsCls, testOptionsArray, testOptionsArray2d, testOptionsSet,
+                                        testOptionsMap, testOptionsRegExp, testOptionsObjectLiteral, testOptionsObject, testOptionsHtmlElem,
+                                        testOptionsHtmlElemList, testOptionsTargetObject, testOptionsTargetObjectSet, testOptionsTargetObjectArr, testOptionsTargetObjectArr2d,
+                                        testOptionsValueChecking,
+                                        testOptionsMultiParamErr, testOptionsMultiValues, 
+                                        testOptionsCheckSingleConfig, testOptionsCheckConfigsParam, testOptionsValidTypesByConfigsParam, testOptionsValidTypesByConfigsVeri);
     report('utils/valid.js', testValidUtil);
     </script>
 </body>

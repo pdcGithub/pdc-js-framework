@@ -33,6 +33,17 @@ import {
     testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList
 } from "./valid/testAuto.js";
 
+import {
+    testOptionsConstant, testOptionsParamErr, 
+    testOptionsNull, testOptionsString, testOptionsNumber, testOptionsBoolean, testOptionsSymbol,
+    testOptionsFunc, testOptionsCls, testOptionsArray, testOptionsArray2d, testOptionsSet,
+    testOptionsMap, testOptionsRegExp, testOptionsObjectLiteral, testOptionsObject, testOptionsHtmlElem,
+    testOptionsHtmlElemList, testOptionsTargetObject, testOptionsTargetObjectSet, testOptionsTargetObjectArr, testOptionsTargetObjectArr2d,
+    testOptionsValueChecking,
+    testOptionsMultiParamErr, testOptionsMultiValues, 
+    testOptionsCheckSingleConfig, testOptionsCheckConfigsParam, testOptionsValidTypesByConfigsParam, testOptionsValidTypesByConfigsVeri
+} from "./valid/testOptions.js"
+
 // 导入 Assert 断言工具
 import { Assert } from "../testTools.js";
 
@@ -49,6 +60,7 @@ function testValidUtil(){
     Assert.equalsStrictly(true, typeof vu.throwError === 'function');
     Assert.equalsStrictly(true, typeof vu.validArray === 'function');
     Assert.equalsStrictly(true, typeof vu.autoVnAofHtmlElement === 'function');
+    Assert.equalsStrictly(true, typeof vu.validTypesByConfigs === 'function');
 }
 
 // 把这些测试函数，导出给 外部调用
@@ -65,6 +77,15 @@ export{
     testAutoVnAofMap, testAutoVnAofSet, testAutoVnAofArray, testAutoVnAof2DArray,
     testAutoVnAofObjectLiteral, testAutoVnAofTargetObject, testAutoVnAofTargetObjectSet, testAutoVnAofTargetObjectArray,
     testAutoVnAofTargetObject2DArray, testAutoVnAofHtmlElement, testAutoVnAofHtmlElementList,
+
+    testOptionsConstant, testOptionsParamErr, 
+    testOptionsNull, testOptionsString, testOptionsNumber, testOptionsBoolean, testOptionsSymbol,
+    testOptionsFunc, testOptionsCls, testOptionsArray, testOptionsArray2d, testOptionsSet,
+    testOptionsMap, testOptionsRegExp, testOptionsObjectLiteral, testOptionsObject, testOptionsHtmlElem,
+    testOptionsHtmlElemList, testOptionsTargetObject, testOptionsTargetObjectSet, testOptionsTargetObjectArr, testOptionsTargetObjectArr2d,
+    testOptionsValueChecking,
+    testOptionsMultiParamErr, testOptionsMultiValues, 
+    testOptionsCheckSingleConfig, testOptionsCheckConfigsParam, testOptionsValidTypesByConfigsParam, testOptionsValidTypesByConfigsVeri,
 
     testValidUtil
 }

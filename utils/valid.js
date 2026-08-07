@@ -37,6 +37,9 @@ import {
     autoVnAofHtmlElement, autoVnAofHtmlElementList
 } from "./valid/auto.js";
 
+// 这里的 options.js 模块，不对外开放 checkSingleConfig, checkConfigs 。因为它们是 validTypesByConfigs 使用的，其它地方应该用不上
+import { VDATA_TYPE, validSingleType, validMultiTypes, validTypesByConfigs } from "./valid/options.js";
+
 // 把子模块的内容全部导出。在使用上这里是一个对外接口模块。因为内容太多不好管理，分开实现再统一导出。
 export {
     // 基础的异常抛出处理
@@ -52,5 +55,7 @@ export {
     autoVnAofMap, autoVnAofSet, 
     autoVnAofArray, autoVnAof2DArray,
     autoVnAofObjectLiteral, autoVnAofTargetObject, autoVnAofTargetObjectSet, autoVnAofTargetObjectArray, autoVnAofTargetObject2DArray,
-    autoVnAofHtmlElement, autoVnAofHtmlElementList
+    autoVnAofHtmlElement, autoVnAofHtmlElementList,
+    // 对于数据校验的配置化处理
+    VDATA_TYPE, validSingleType, validMultiTypes, validTypesByConfigs
 }
