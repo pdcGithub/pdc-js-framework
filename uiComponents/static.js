@@ -19,10 +19,11 @@
 import { PROTECTED_GET_CONTENT, Bootstrap5Object } from "./static/base/Bootstrap5Object.js";
 
 import { Bs5LoadingLayer } from "./static/others/Bs5LoadingLayer.js";
+import { Bs5Table } from "./static/others/Bs5Table.js";
 
 // ========= 导出
 export{
     PROTECTED_GET_CONTENT, Bootstrap5Object,
 
-    Bs5LoadingLayer
+    Bs5LoadingLayer, Bs5Table
 }

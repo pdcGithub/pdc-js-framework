@@ -14,7 +14,7 @@
 "use strict"; // 这是严格模式下的 Javascript 代码
 
 // 导入 static 模块用于测试
-import { PROTECTED_GET_CONTENT, Bootstrap5Object } from "../../uiComponents/static.js";
+import { PROTECTED_GET_CONTENT, Bootstrap5Object, Bs5Table } from "../../uiComponents/static.js";
 
 // 导入子模块的测试函数
 import {
@@ -25,6 +25,10 @@ import {
 
 import { testBs5LoadingLayerConstructor } from "./static/others/testBs5LoadingLayer.js";
 
+import {
+    testBs5TableConstructor, testBs5TableGetHeaderString, testBs5TableGetBodyString, testBs5TableToHtmlString
+} from "./static/others/testBs5Table.js";
+
 /**
  * 再增加一个测试 static 模块能否正常调用的测试
  */
@@ -32,6 +36,9 @@ function testStaticModule(){
 
     let t1 = new Bootstrap5Object();
     let t2 = t1[PROTECTED_GET_CONTENT]();
+
+    // 测试 Bs5Table 有没有加入 static.js 中
+    let tab1 = new Bs5Table();
 }
 
 // =========== 导出测试函数
@@ -41,6 +48,8 @@ export {
     testBootstrap5ObjectProteced,
 
     testBs5LoadingLayerConstructor,
+
+    testBs5TableConstructor, testBs5TableGetHeaderString, testBs5TableGetBodyString, testBs5TableToHtmlString,
     
     testStaticModule
 }
