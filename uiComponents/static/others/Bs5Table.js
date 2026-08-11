@@ -17,59 +17,9 @@
 import { VerificationError } from "../../../models/errors.js";
 import { validTypesByConfigs, VDATA_TYPE, throwError } from "../../../utils/valid.js";
 import { isEmpty2DArray, isString, isTargetObject, mergeObject, valueOfString } from "../../../utils/datatype.js";
-import { myRandNumStr } from "../../uitools.js";
+import { myRandNumStr, TABLE_DEFAULT_CONFIG } from "../../uitools.js";
 import { Bootstrap5Object } from "../base/Bootstrap5Object.js";
 import { mystdout } from "../../../utils/string.js";
-
-/**
- * 常量：Table 组件的可选参数的默认值
- */
-const TABLE_DEFAULT_CONFIG = {
-    /**
-     * 表格的行是否以条纹样式显示。默认为 false ；
-     */
-    rowStriped : false, 
-    /**
-     * 表格的列是否以条纹样式显示。默认为 false ；
-     */
-    colStriped : false, 
-    /**
-     * 表格在鼠标悬停时，是否高亮显示。默认为 false ；
-     */
-    hover : false, 
-    /**
-     * 表格是否显示边框。默认为 false；
-     */
-    bordered : false, 
-    /**
-     * 表格如果显示边框，则颜色可调整（参考 BTN_COR）。默认 为空字符串 ；
-     */
-    borderColor : '', 
-    /**
-     * 表格是否完全没有边框（一般情况，行与行之间有分隔线。如果为true 则分割线都没有）。默认为 false ；
-     */
-    borderLess : false, 
-    /**
-     * 表格显示时，是否更加紧凑。默认为 false ；
-     */
-    moreCompact : false, 
-    /**
-     * 表格显示时，是否在 header 和 body 之间显示一条分割线 。默认为 false ；
-     */
-    groupDivider : false, 
-    /**
-     * 表格显示时，是否让表格内容垂直居中。 默认为 false ；
-     */
-    alignMiddle : false, 
-    /**
-     * 表格显示时，是否让表格水平自适应滚动。默认为 false ；
-     */
-    responsive : false,
-    /**
-     * 表格显示时，自适应滚动的响应大小(参考 sm,md,lg,xl,xxl)。大于这个值，将不会自适应滚动。默认为 空 字符串 ；
-     */
-    responsiveSize : ''
-}
 
 /**
  * 这里是 static 静态组件的一个表格的绘制处理。它有多种不同的配置，具体可参考构造函数中的 options 配置。

@@ -22,7 +22,7 @@ import { isRegexpOk } from "../../utils/datatype.js";
 
 import { 
     BTN_GROUP_SIZE, BTN_SIZE, BTN_COR, myRandNumStr,
-    LOADING_TYPE
+    LOADING_TYPE, TABLE_DEFAULT_CONFIG
 } from "../../uiComponents/uitools.js";
 
 // ========== 开始测试
@@ -49,6 +49,18 @@ function testConstants() {
     //
     Assert.equalsStrictly('border', LOADING_TYPE.border);
     Assert.equalsStrictly('grow', LOADING_TYPE.grow);
+    //
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.rowStriped);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.colStriped);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.hover);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.bordered);
+    Assert.equalsStrictly('', TABLE_DEFAULT_CONFIG.borderColor);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.borderLess);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.moreCompact);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.groupDivider);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.alignMiddle);
+    Assert.equalsStrictly(false, TABLE_DEFAULT_CONFIG.responsive);
+    Assert.equalsStrictly('', TABLE_DEFAULT_CONFIG.responsiveSize);
 }
 
 function testMyRandNumStr(){
