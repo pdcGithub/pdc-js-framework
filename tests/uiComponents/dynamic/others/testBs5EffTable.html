@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这是 uiComponents/dynamic/others/Bs5EffTable 测试</title>
+    <!-- 导入 init 模块的 css 样式。它里面包含了 bootstrap 的样式引用 -->
+    <link rel="stylesheet" href="../../../../uiComponents/init.css" />
+</head>
+<body>
+    <script type="module">
+    
+    // 导入测试工具包
+    import { report } from "../../../testTools.js";
+
+    // 导入测试函数
+    import { testBs5EffTableConstructor, testBs5EffTableWriteToPage, testBs5EffTableRefreshTable, testBs5EffTableFinal } from "./testBs5EffTable.js";
+
+    // 开始测试
+    report('uiComponents/dynamic/others/Bs5EffTable.js', testBs5EffTableConstructor, testBs5EffTableWriteToPage, testBs5EffTableRefreshTable, testBs5EffTableFinal);
+    </script>
+</body>
+</html>
