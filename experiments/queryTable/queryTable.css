@@ -1,0 +1,54 @@
+@charset "UTF-8";
+
+/*
+ * 说明：这里是修改默认的表格 striped 颜色 ，以及 hover 颜色
+ */
+.table {
+    --bs-table-striped-bg: #d1eaff73;
+    --bs-table-hover-color: var(--bs-table-striped-bg);
+    --bs-table-hover-bg : var(--bs-table-striped-bg);
+}
+
+/* 
+ * 说明：这里是让 Bootstrap 5 样式中的 table 列宽设置为固定宽度。
+ * 注意：默认的样式是自动伸缩，不加这个设置了 th 的 width 没有作用。
+ */
+.table-layout-fixed {
+    table-layout: fixed !important;
+}
+
+/* 
+ * 说明：这里是让 table 的 thead 滚动时贴在外层 div 上边缘。
+ * 注意：只有当 table 外的 div 有高度和宽度限制，显现出滚动条，这里才有效果。另外，这个样式要加在 thead 标签上
+ */
+.table-header-fixed {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/*
+ * 说明：这里是让 table 的 表头和表体的第1列，滚动时贴住左边。样式加在 table 上
+ * 注意：纯css实现固定列比较麻烦。建议改 JavaScript 实现。
+ */
+.table-col1-forzen thead tr th:first-child, .table-col1-forzen tbody tr td:first-child{
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+}
+
+/*
+ * 说明：这里是让 table 的 表头和表体的第1、2列，滚动时贴住左边。样式加在 table 上
+ * 注意：纯css实现固定列比较麻烦。建议改 JavaScript 实现。
+ */
+.table-col2-forzen thead tr th:nth-child(1), .table-col2-forzen tbody tr td:nth-child(1){
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+}
+.table-col2-forzen thead tr th:nth-child(2), .table-col2-forzen tbody tr td:nth-child(2){
+    position: -webkit-sticky;
+    position: sticky;
+    left: 100px;
+}
