@@ -23,6 +23,7 @@ import {
 } from "./dynamic/base/Bs5EffBaseComponent.js";
 
 import { Bs5EffLoading } from "./dynamic/others/Bs5EffLoading.js";
+import { Bs5EffTable } from "./dynamic/others/Bs5EffTable.js";
 
 // ========= 导出
 export {
@@ -30,5 +31,5 @@ export {
     PROTECTED_GET_MYID, PROTECTED_GET_MYCSSCLASS, PROTECTED_GET_MYSUBCONFIG, PROTECTED_GET_BOOTSTRAPOBJECT,
     PROTECTED_SET_MYID, PROTECTED_SET_MYCSSCLASS, PROTECTED_SET_MYSUBCONFIG, PROTECTED_SET_BOOTSTRAPOBJECT,
     
-    Bs5EffLoading
+    Bs5EffLoading, Bs5EffTable
 }

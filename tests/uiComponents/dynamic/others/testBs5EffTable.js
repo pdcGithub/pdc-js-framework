@@ -742,6 +742,8 @@ function testBs5EffTableFinal(){
         <div>这里是关于 Bs5EffTable 的 最终测试</div>
         <div>
             <button id="testBs5EffTableWriteToPageDiv3Btn1" class="btn btn-success">刷新数据</button>
+            <button id="testBs5EffTableWriteToPageDiv3Btn2" class="btn btn-secondary">隐藏表格</button>
+            <button id="testBs5EffTableWriteToPageDiv3Btn3" class="btn btn-primary">显示表格</button>
         </div>
         <div id="testBs5EffTableWriteToPageDiv3Result">
         </div>
@@ -774,6 +776,12 @@ function testBs5EffTableFinal(){
             ['210','220','230','240','250'],
             ['310','320','330','340','350']
         ]);
+    });
+    document.querySelector('#testBs5EffTableWriteToPageDiv3Btn2').addEventListener('click', (event)=>{
+        finalTable.hide();
+    });
+    document.querySelector('#testBs5EffTableWriteToPageDiv3Btn3').addEventListener('click', (event)=>{
+        finalTable.show();
     });
 }
 

@@ -99,6 +99,7 @@
         testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
         testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
         testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide, 
+        testBs5EffTableConstructor, testBs5EffTableRefreshTable, testBs5EffTableWriteToPage, testBs5EffTableFinal,
         testBs5EffModule
     } from "./uiComponents/testDynamic.js";
 
@@ -164,7 +165,10 @@
 
     report('uiComponents/events.js', testEventName, testEventObject);
     report('uiComponents/uitools.js', testConstants, testMyRandNumStr);
-
+    report('uiComponents/uidatatype.js', testIsContentObject, testIsContentObjectArray, testIsContentObjectSet, testIsContentObject2DArray,
+                                        testIsChildrenComponent, testIsChildrenComponentArray, testIsChildrenComponent2DArray);
+    report('uiComponents/load.js', testLoadConstants, testLoadInitMethod);
+    // 因为 组件的测试 往往伴随着大块的内容，所以放到最后。
     report('uiComponents/static.js', testBootstrap5ObjectCreate, testBootstrap5ObjectAble, testBootstrap5ObjectGet, testBootstrap5ObjectAdd,
                                     testBootstrap5ObjectRemove, testBootstrap5ObjectHas, testBootstrap5ObjectClear, testBootstrap5ObjectTo,
                                     testBootstrap5ObjectProteced,
@@ -175,11 +179,8 @@
     report('uiComponents/dynamic.js', testBs5EffConstructor, testBs5EffGet, testBs5EffSet, testBs5EffHtmlString,
                                     testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
                                     testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide,
+                                    testBs5EffTableConstructor, testBs5EffTableRefreshTable, testBs5EffTableWriteToPage, testBs5EffTableFinal,
                                     testBs5EffModule);
-    report('uiComponents/uidatatype.js', testIsContentObject, testIsContentObjectArray, testIsContentObjectSet, testIsContentObject2DArray,
-                                        testIsChildrenComponent, testIsChildrenComponentArray, testIsChildrenComponent2DArray);
-
-    report('uiComponents/load.js', testLoadConstants, testLoadInitMethod);
 
     // 打开 thirdparty 中 bootstrap5 的测试页面
     window.open('thirdpartys/bootstrap5/testBootstrap5.html', 'bsTestWindow');

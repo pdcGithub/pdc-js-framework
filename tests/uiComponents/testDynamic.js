@@ -19,7 +19,8 @@ import {
     Bs5EffBaseComponent, 
     PROTECTED_GET_MYID, PROTECTED_GET_MYCSSCLASS, PROTECTED_GET_MYSUBCONFIG, PROTECTED_GET_BOOTSTRAPOBJECT,
     PROTECTED_SET_MYID, PROTECTED_SET_MYCSSCLASS, PROTECTED_SET_MYSUBCONFIG, PROTECTED_SET_BOOTSTRAPOBJECT,
-    Bs5EffLoading
+    Bs5EffLoading, 
+    Bs5EffTable
 } from "../../uiComponents/dynamic.js";
 
 // ========== 导入测试函数
@@ -30,6 +31,9 @@ import {
 import {
     testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide
 } from "./dynamic/others/testBs5EffLoading.js";
+import {
+    testBs5EffTableConstructor, testBs5EffTableRefreshTable, testBs5EffTableWriteToPage, testBs5EffTableFinal
+} from "./dynamic/others/testBs5EffTable.js";
 
 /**
  * 再增加一个测试 dynamic 模块能否正常调用的测试
@@ -38,6 +42,12 @@ function testBs5EffModule(){
     
     let bs5effObj1 = new Bs5EffBaseComponent('test1111');
     Assert.equalsStrictly('test1111', bs5effObj1[PROTECTED_GET_MYID]());
+
+    // loading ...
+    let loading = new Bs5EffLoading();
+
+    // 简易表格
+    let table = new Bs5EffTable();
 }
 
 // ========== 导出测试函数
@@ -46,6 +56,8 @@ export{
     testBs5EffHtmlObject, testBs5EffWrite, testBs5EffShowAndHide, testBs5EffAble,
 
     testBs5EffLoadingConstructor, testBs5EffLoadingShowAndHide,
+
+    testBs5EffTableConstructor, testBs5EffTableRefreshTable, testBs5EffTableWriteToPage, testBs5EffTableFinal,
     
     testBs5EffModule
 }
