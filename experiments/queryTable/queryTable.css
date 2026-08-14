@@ -9,6 +9,13 @@
     --bs-table-hover-bg : var(--bs-table-striped-bg);
 }
 
+/*
+ * 说明：这里是修改 table 的标题栏颜色
+ */
+.table thead tr th {
+    background-color: #c3e7ff;
+}
+
 /* 
  * 说明：这里是让 Bootstrap 5 样式中的 table 列宽设置为固定宽度。
  * 注意：默认的样式是自动伸缩，不加这个设置了 th 的 width 没有作用。

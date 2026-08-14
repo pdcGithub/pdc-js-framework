@@ -11,11 +11,62 @@
     <!-- 这里，我们将验证如何绘制一个 带查询处理的 表格 -->
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-4 pt-2 pb-2 ">
-                <!-- 排序区 toggle button -->
+            <div class="col-12 col-xl-4 pt-2 pb-2 d-flex flex-wrap gap-1 align-items-start">
+                <!-- 排序区 button 使用 flex 布局，如果长度不足，可以自动换行。行列间距为 0.25rem-->
+                <button type="button" class="btn btn-outline-primary btn-sm" >排序条件1</button>
+                <button type="button" class="btn btn-primary btn-sm" >排序条件2</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" >排序条件3</button>
+                <button type="button" class="btn btn-primary btn-sm" >倒序</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" >顺序</button>
+                <button type="button" class="btn btn-primary btn-sm" >15</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" >30</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" >45</button>
             </div>
-            <div class="col-12 col-md-8 pt-2 pb-2 ">
-                <!-- 查询区 input -->
+            <div class="col-12 col-xl-8 pt-2 pb-2 ">
+                <!-- 查询区 使用 flex 布局。行间距 1 列间距 2 内容垂直居中 -->
+                <form class="d-flex flex-wrap row-gap-1 column-gap-2 align-items-center">
+                    <div class="col-auto">
+                        <input id="input1" type="text" class="form-control form-control-sm" value="2026-08-14"/>
+                    </div>
+                    <div class="col-auto">
+                        <input id="input2" type="text" class="form-control form-control-sm" value="2026-08-15"/>
+                    </div>
+                    <div class="col-auto">
+                        <select id="input3" class="form-select form-select-sm">
+                            <option>-- 请选择 --</option>
+                            <option>测试1</option>
+                            <option>测试2</option>
+                            <option>测试3</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <select id="input31" class="form-select form-select-sm">
+                            <option>-- 请选择 --</option>
+                            <option>测试111</option>
+                            <option>测试2222</option>
+                            <option>测试3333</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" value="" id="checkChecked1" />
+                            <label class="form-check-label" for="checkChecked1">条件4-1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" value="" id="checkChecked2" checked/>
+                            <label class="form-check-label" for="checkChecked2">条件4-2</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <input id="input6" type="text" class="form-control form-control-sm" value=""/>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary btn-sm">查询</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary btn-sm">重置</button>
+                    </div>
+                </form>
             </div>
         </div>
         <div class="row">
@@ -127,8 +178,9 @@
         </div>
         <div class="row">
             <!-- 分页信息区 这里有2个处理，操作按钮 和 分页信息 -->
-            <!-- 默认 col 长 12 ，如果大于等于 md 则为 6 -->
-            <div class="col-12 col-md-6 pt-2 pb-2">
+            <!-- 默认 col 长 12 ，如果大于等于 xl (≥1200px) 则为 6 -->
+            <!-- 具体宽度设置，参考 Bootstrap 5 的 Breakpoints 文档 -->
+            <div class="col-12 col-xl-6 pt-2 pb-2">
                 <!-- 分页信息 -->
                 <span class="pt-1 pb-1">当前为第<strong>1</strong>页, 每页<strong>20</strong>条数据, 共有<strong>100</strong>页, <strong>19999</strong> 条数据。</span>
                 <button type="button" class="btn btn-outline-primary btn-sm">1</button>
@@ -139,11 +191,11 @@
                 <button type="button" class="btn btn-outline-primary btn-sm">99</button>
                 <button type="button" class="btn btn-outline-primary btn-sm">100</button>
             </div>
-            <div class="col-12 col-md-6 pt-2 pb-2 clearfix">
+            <div class="col-12 col-xl-6 pt-2 pb-2 text-end">
                 <!-- 操作按钮 -->
-                <button type="button" class="btn btn-secondary me-1 float-end">按钮3</button>
-                <button type="button" class="btn btn-success me-1 float-end">按钮2</button>
-                <button type="button" class="btn btn-primary me-1 float-end">按钮1</button>
+                <button type="button" class="btn btn-primary btn-sm">按钮1</button>
+                <button type="button" class="btn btn-success btn-sm">按钮2</button>
+                <button type="button" class="btn btn-secondary btn-sm">按钮3</button>
             </div>
         </div>
     </div>
